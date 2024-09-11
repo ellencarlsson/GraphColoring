@@ -3,6 +3,7 @@ import sys
 import time
 import psutil
 import threading
+import random
 
 # Initialize Pygame
 pygame.init()
@@ -14,7 +15,6 @@ pygame.display.set_caption("Interactive Graph Coloring")
 nodes = []  # Store node positions (e.g., [(x1, y1), (x2, y2), ...])
 edges = []  # Store edges as tuples of node indices (e.g., [(0, 1), (1, 2)])
 adj_matrix = []  # Adjacency matrix will be built dynamically
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]  # Color list
 selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
 runtime_info_font = pygame.font.SysFont(None, 25)
@@ -63,7 +63,7 @@ def isSafe(v, color_assignment, c):
             return False
     return True
 
-def graphColoringUtil(color_assignment, v, m):
+def graphColoringUtil(color_assignment, v, colors):
     if v == len(nodes):
         return True
     
@@ -72,26 +72,64 @@ def graphColoringUtil(color_assignment, v, m):
             color_assignment[v] = colors[c]
             draw_graph(color_assignment)
             pygame.time.delay(500)
-            if graphColoringUtil(color_assignment, v + 1, m):
+            if graphColoringUtil(color_assignment, v + 1, colors):
                 return True
-            color_assignment[v] = (255, 255, 255)
+            color_assignment[v] = (255, 255, 255)  # Reset the color
             draw_graph(color_assignment)
             pygame.time.delay(500)
     
     return False
 
 def graphColoring(m):
+
     color_assignment = [(255, 255, 255)] * len(nodes)
     draw_graph(color_assignment)
     pygame.time.delay(1000)
 
     start_time = time.time()
 
-    if not graphColoringUtil(color_assignment, 0, m):
+    # Generate random colors based on the minimum required (m)
+    colors = [generate_random_color() for _ in range(m)]
+
+    if not graphColoringUtil(color_assignment, 0, colors):
         print("Solution does not exist")
 
     elapsed_time = time.time() - start_time
     return elapsed_time
+
+def generate_random_color():
+    """Generates a random RGB color."""
+    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+# Function to calculate the minimum number of colors (chromatic number)
+def calculate_min_colors():
+    color_assignment = [-1] * len(nodes)
+    
+    # Assign the first color to the first node
+    color_assignment[0] = 0
+    
+    # A temporary array to store the available colors, initialized to false (not available)
+    available = [False] * len(nodes)
+    
+    # Assign colors to remaining nodes
+    for u in range(1, len(nodes)):
+        # Mark colors of adjacent nodes as unavailable
+        for i in range(len(nodes)):
+            if adj_matrix[u][i] == 1 and color_assignment[i] != -1:
+                available[color_assignment[i]] = True
+        
+        # Find the first available color
+        cr = 0
+        while cr < len(nodes) and available[cr]:
+            cr += 1
+        
+        color_assignment[u] = cr  # Assign the found color
+        
+        # Reset the available array for the next iteration
+        available = [False] * len(nodes)
+    
+    # The number of colors used is the chromatic number
+    return max(color_assignment) + 1
 
 def display_runtime_and_usage():
     global stop_flag
@@ -125,8 +163,6 @@ def main():
         stop_flag = False
         threading.Thread(target=display_runtime_and_usage, daemon=True).start()
 
-    graph_colored = False  # Flag to track if the graph has been colored
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -151,23 +187,18 @@ def main():
                         add_edge(selected_node, clicked_node)
                         selected_node = None  # Reset selected node
 
-                # Only redraw the whole graph with white if it has not been colored yet
-                if not graph_colored:
-                    draw_graph([(255, 255, 255)] * len(nodes))
+                draw_graph([(255, 255, 255)] * len(nodes))
 
             # Press space to start coloring
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and len(nodes) > 0:
                     run_runtime_display()  # Start runtime info display
                     start_time = time.time()  # Reset start time
-                    elapsed_time = graphColoring(4)  # Start graph coloring
-                    graph_colored = True  # Set the flag to indicate coloring is complete
+                    min_colors = calculate_min_colors()  # Calculate minimum number of colors
+                    elapsed_time = graphColoring(min_colors)  # Start graph coloring using the calculated min_colors
                     stop_flag = True  # Stop runtime info updates after coloring
 
-        # Only redraw the graph with white if not yet colored
-        if not graph_colored:
-            draw_graph([(255, 255, 255)] * len(nodes))
+        draw_graph([(255, 255, 255)] * len(nodes))
 
 if __name__ == "__main__":
     main()
-    

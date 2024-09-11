@@ -6,4 +6,5 @@ pip install pygame
 
 pip install psutil
 
+pip install pygame
 python graphcoloring.py
