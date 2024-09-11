@@ -163,6 +163,8 @@ def main():
         stop_flag = False
         threading.Thread(target=display_runtime_and_usage, daemon=True).start()
 
+    graph_colored = False  # Flag to track if the graph has been colored
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -187,7 +189,9 @@ def main():
                         add_edge(selected_node, clicked_node)
                         selected_node = None  # Reset selected node
 
-                draw_graph([(255, 255, 255)] * len(nodes))
+                # Only redraw the whole graph with white if it has not been colored yet
+                if not graph_colored:
+                    draw_graph([(255, 255, 255)] * len(nodes))
 
             # Press space to start coloring
             if event.type == pygame.KEYDOWN:
@@ -196,9 +200,12 @@ def main():
                     start_time = time.time()  # Reset start time
                     min_colors = calculate_min_colors()  # Calculate minimum number of colors
                     elapsed_time = graphColoring(min_colors)  # Start graph coloring using the calculated min_colors
+                    graph_colored = True  # Set the flag to indicate coloring is complete
                     stop_flag = True  # Stop runtime info updates after coloring
 
-        draw_graph([(255, 255, 255)] * len(nodes))
-
+        # Only redraw the graph with white if not yet colored
+        if not graph_colored:
+            draw_graph([(255, 255, 255)] * len(nodes))
+            
 if __name__ == "__main__":
     main()
