@@ -1,5 +1,9 @@
 Hej hej hej!
 
-För att köra kode skriv följande i terminalen:
+För att köra koden skriv följande i terminalen:
+
+pip install pygame
+
+pip install psutil
 
 python graphcoloring.py
