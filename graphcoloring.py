@@ -13,8 +13,8 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Interactive Graph Coloring")
 
 # Variables
-nodes = setofnodes.nodes_star # Store node positions (e.g., [(x1, y1), (x2, y2), ...])
-edges = setofnodes.edges_star  # Store edges as tuples of node indices (e.g., [(0, 1), (1, 2)])
+nodes = setofnodes.nodes_bipartite # Store node positions (e.g., [(x1, y1), (x2, y2), ...])
+edges = setofnodes.edges_bipartite  # Store edges as tuples of node indices (e.g., [(0, 1), (1, 2)])
 adj_matrix = []  # Adjacency matrix will be built dynamically
 selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
@@ -111,6 +111,7 @@ def generate_random_color():
 
 # Function to calculate the minimum number of colors (chromatic number)
 def calculate_min_colors():
+    global min_colors
     color_assignment = [-1] * len(nodes)
     
     # Assign the first color to the first node
@@ -137,6 +138,7 @@ def calculate_min_colors():
         available = [False] * len(nodes)
     
     # The number of colors used is the chromatic number
+    min_colors = max(color_assignment) + 1
     return max(color_assignment) + 1
 
 def display_runtime_and_usage():
@@ -149,11 +151,13 @@ def display_runtime_and_usage():
         runtime_text = runtime_info_font.render(f"Runtime: {runtime:.3f} s", True, (0, 0, 0))
         cpu_text = runtime_info_font.render(f"CPU Usage: {cpu_usage}%", True, (0, 0, 0))
         memory_text = runtime_info_font.render(f"Memory Usage: {memory_info.percent}%", True, (0, 0, 0))
+        color_text = runtime_info_font.render(f"Colors Used: {min_colors}", True, (0,0,0))
 
         screen.fill((255, 255, 255), (width - 220, 10, 210, 90))  # Clear the area before writing new info
         screen.blit(runtime_text, (width - 200, 20))
         screen.blit(cpu_text, (width - 200, 50))
         screen.blit(memory_text, (width - 200, 80))
+        screen.blit(color_text, (width - 200, 110))
 
         pygame.display.update()
 
