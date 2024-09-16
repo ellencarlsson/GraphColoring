@@ -4,6 +4,7 @@ import time
 import psutil
 import threading
 import random
+import setofnodes
 
 # Initialize Pygame
 pygame.init()
@@ -12,12 +13,22 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Interactive Graph Coloring")
 
 # Variables
-nodes = []  # Store node positions (e.g., [(x1, y1), (x2, y2), ...])
-edges = []  # Store edges as tuples of node indices (e.g., [(0, 1), (1, 2)])
+nodes = setofnodes.nodes_star # Store node positions (e.g., [(x1, y1), (x2, y2), ...])
+edges = setofnodes.edges_star  # Store edges as tuples of node indices (e.g., [(0, 1), (1, 2)])
 adj_matrix = []  # Adjacency matrix will be built dynamically
 selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
 runtime_info_font = pygame.font.SysFont(None, 25)
+
+def init_adj_matrix():
+    n = len(nodes)
+    global adj_matrix
+    adj_matrix = [[0 for _ in range(n)] for _ in range(n)]
+    for edge in edges:
+        node1, node2 = edge
+        adj_matrix[node1][node2] = 1
+        adj_matrix[node2][node1] = 1  # Assuming an undirected graph
+
 
 # Function to draw the graph nodes and edges
 def draw_graph(color_assignment):
@@ -71,12 +82,10 @@ def graphColoringUtil(color_assignment, v, colors):
         if isSafe(v, color_assignment, colors[c]):
             color_assignment[v] = colors[c]
             draw_graph(color_assignment)
-            pygame.time.delay(500)
             if graphColoringUtil(color_assignment, v + 1, colors):
                 return True
             color_assignment[v] = (255, 255, 255)  # Reset the color
             draw_graph(color_assignment)
-            pygame.time.delay(500)
     
     return False
 
@@ -84,7 +93,6 @@ def graphColoring(m):
 
     color_assignment = [(255, 255, 255)] * len(nodes)
     draw_graph(color_assignment)
-    pygame.time.delay(1000)
 
     start_time = time.time()
 
@@ -148,7 +156,6 @@ def display_runtime_and_usage():
         screen.blit(memory_text, (width - 200, 80))
 
         pygame.display.update()
-        time.sleep(0.1)
 
 # Main loop for the pygame window
 def main():
@@ -156,6 +163,8 @@ def main():
 
     runtime = 0
     font = pygame.font.SysFont(None, 25)
+
+    init_adj_matrix()
     
     # Thread for updating runtime info
     def run_runtime_display():
