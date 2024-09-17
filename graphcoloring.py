@@ -14,9 +14,11 @@ width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Interactive Graph Coloring")
 
+Figure = "bipartite"
+
 # Variables
-nodes = setofnodes.nodes_star  # Store node positions
-edges = setofnodes.edges_star  # Store edges as tuples of node indices
+nodes = getattr(setofnodes, f"nodes_{Figure}")  # Store node positions
+edges = getattr(setofnodes, f"edges_{Figure}")  # Store edges as tuples of node indices
 adj_matrix = []  # Adjacency matrix will be built dynamically
 selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
@@ -29,7 +31,7 @@ monitor_stop_flag = False
 monitor_lock = threading.Lock()
 
 # CSV File Path
-CSV_FILE = "performance_data.csv"
+CSV_FILE = f"{Figure}_performance_data.csv"
 AVERAGE_FILE = "performance_averages.txt"
 
 # Define fieldnames for CSV
