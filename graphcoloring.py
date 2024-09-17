@@ -14,6 +14,13 @@ width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Interactive Graph Coloring")
 
+#pentagon
+#bipartite
+#grid
+#large
+#star
+#complete
+
 Figure = "bipartite"
 
 # Variables
