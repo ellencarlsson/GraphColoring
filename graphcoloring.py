@@ -21,11 +21,11 @@ pygame.display.set_caption("Interactive Graph Coloring")
 #star
 #complete
 
-Figure = "bipartite"
+figure = "bipartite"
 
 # Variables
-nodes = getattr(setofnodes, f"nodes_{Figure}")  # Store node positions
-edges = getattr(setofnodes, f"edges_{Figure}")  # Store edges as tuples of node indices
+nodes = getattr(setofnodes, f"nodes_{figure}")  # Store node positions
+edges = getattr(setofnodes, f"edges_{figure}")  # Store edges as tuples of node indices
 adj_matrix = []  # Adjacency matrix will be built dynamically
 selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
@@ -38,7 +38,7 @@ monitor_stop_flag = False
 monitor_lock = threading.Lock()
 
 # CSV File Path
-CSV_FILE = f"{Figure}_performance_data.csv"
+CSV_FILE = f"{figure}_performance_data.csv"
 AVERAGE_FILE = "performance_averages.txt"
 
 # Define fieldnames for CSV
@@ -382,15 +382,59 @@ def main():
                     if averages:
                         avg_runtime, avg_cpu, avg_mem, avg_colors = averages
 
-                        # Append the averages to a text file
-                        avg_timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                        with open(AVERAGE_FILE, "w") as f:
-                            f.write(f"{avg_timestamp}, Average Runtime: {avg_runtime:.3f} s, "
-                                    f"Average CPU Usage: {avg_cpu:.2f}%, "
-                                    f"Average Memory Usage: {avg_mem:.2f} MB, "
-                                    f"Average Colors Used: {avg_colors:.2f}\n")
+                        # Read the existing averages file, or start with an empty list
+                        if os.path.isfile(AVERAGE_FILE):
+                            with open(AVERAGE_FILE, "r") as f:
+                                lines = f.readlines()
+                        else:
+                            lines = []
 
-                        print(f"Averages logged at {avg_timestamp}")
+                        figure_found = False
+                        new_lines = []
+                        run_count = 1  # Start with 1 if figure is not found
+
+                        # Check if the figure's average data already exists in the file
+                        for line in lines:
+                            if f"Figure: {figure}" in line:
+                                # Extract the current run count from the line (if present)
+                                split_line = line.split(", ")
+                                if "Run Count" in line:
+                                    count_part = split_line[-1]
+                                    current_count = int(count_part.split(": ")[1])
+                                    run_count = current_count + 1
+                                else:
+                                    run_count = 1  # Handle the case where no count is present
+
+                                # Overwrite the line with new average data and increment run count
+                                new_line = (f"Figure: {figure}, "
+                                            f"Average Runtime: {avg_runtime:.3f} s, "
+                                            f"Average CPU Usage: {avg_cpu:.2f}%, "
+                                            f"Average Memory Usage: {avg_mem:.2f} MB, "
+                                            f"Average Colors Used: {avg_colors:.2f}, "
+                                            f"Run Count: {run_count}\n")
+                                new_lines.append(new_line)
+                                figure_found = True
+                            else:
+                                # Keep other lines unchanged
+                                new_lines.append(line)
+
+                        # If the figure was not found, append the new average data and set run count to 1
+                        if not figure_found:
+                            new_line = (f"Figure: {figure}, "
+                                        f"Average Runtime: {avg_runtime:.3f} s, "
+                                        f"Average CPU Usage: {avg_cpu:.2f}%, "
+                                        f"Average Memory Usage: {avg_mem:.2f} MB, "
+                                        f"Average Colors Used: {avg_colors:.2f}, "
+                                        f"Run Count: 1\n")
+                            new_lines.append(new_line)
+
+                        # Write the updated data back to the average file
+                        with open(AVERAGE_FILE, "w") as f:
+                            f.writelines(new_lines)
+
+                        avg_timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                        print(f"Averages for Figure {figure} logged/updated at {avg_timestamp}")
+                        print(f"Run Count for Figure {figure}: {run_count}")
                     else:
                         print("No data available to calculate averages.")
 
