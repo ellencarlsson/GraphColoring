@@ -21,7 +21,7 @@ pygame.display.set_caption("Interactive Graph Coloring")
 #star
 #complete
 
-figure = "bipartite"
+figure = "XL"
 
 # Variables
 nodes = getattr(setofnodes, f"nodes_{figure}")  # Store node positions
