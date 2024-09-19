@@ -21,7 +21,7 @@ pygame.display.set_caption("Interactive Graph Coloring")
 #star
 #complete
 
-figure = "XL"
+figure = "bipartite"
 
 # Variables
 nodes = getattr(setofnodes, f"nodes_{figure}")  # Store node positions
@@ -95,38 +95,6 @@ def generate_random_color():
     """Generates a random RGB color."""
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-# Function to calculate the minimum number of colors (chromatic number)
-def calculate_min_colors():
-    global min_colors
-    color_assignment = [-1] * len(nodes)
-
-    # Assign the first color to the first node
-    color_assignment[0] = 0
-
-    # A temporary array to store the available colors, initialized to false (not available)
-    available = [False] * len(nodes)
-
-    # Assign colors to remaining nodes
-    for u in range(1, len(nodes)):
-        # Mark colors of adjacent nodes as unavailable
-        for i in range(len(nodes)):
-            if adj_matrix[u][i] == 1 and color_assignment[i] != -1:
-                available[color_assignment[i]] = True
-
-        # Find the first available color
-        cr = 0
-        while cr < len(nodes) and available[cr]:
-            cr += 1
-
-        color_assignment[u] = cr  # Assign the found color
-
-        # Reset the available array for the next iteration
-        available = [False] * len(nodes)
-
-    # The number of colors used is the chromatic number
-    min_colors = max(color_assignment) + 1
-    return max(color_assignment) + 1
-
 # Performance Monitoring Function
 def monitor_performance():
     global max_cpu_usage, max_mem_usage, monitor_stop_flag
@@ -168,13 +136,11 @@ def calculate_averages(csv_file):
     return avg_runtime, avg_cpu, avg_mem, avg_colors
 
 # Evolutionary Graph Coloring Functions
-def evolutionaryGraphColoring(m):
+def evolutionaryGraphColoring():
     population_size = 50
     max_generations = 1000
     mutation_rate = 0.1  # Probability of mutation for each node in a candidate solution
-
-    # Generate random colors based on the minimum required (m)
-    colors = [generate_random_color() for _ in range(m)]
+    max_colors = len(nodes)  # Maximum possible colors
 
     # Start timing
     start_time_coloring = time.time()
@@ -182,17 +148,20 @@ def evolutionaryGraphColoring(m):
     # Initialize population
     population = []
     for _ in range(population_size):
-        candidate = [random.randint(0, m - 1) for _ in range(len(nodes))]
+        num_colors = random.randint(1, max_colors)
+        candidate = [random.randint(0, num_colors - 1) for _ in range(len(nodes))]
         population.append(candidate)
 
     # Fitness function
     def fitness(candidate):
         conflicts = 0
         for i in range(len(nodes)):
-            for j in range(i+1, len(nodes)):
+            for j in range(i + 1, len(nodes)):
                 if adj_matrix[i][j] == 1 and candidate[i] == candidate[j]:
                     conflicts += 1
-        return conflicts
+        num_colors_used = len(set(candidate))
+        # The fitness function penalizes conflicts heavily and number of colors lightly
+        return conflicts * len(nodes) + num_colors_used
 
     # Tournament Selection
     def tournament_selection(population, tournament_size=3):
@@ -206,19 +175,16 @@ def evolutionaryGraphColoring(m):
 
     # Crossover Function
     def crossover(parent1, parent2):
-        child = []
-        for i in range(len(nodes)):
-            if random.random() < 0.5:
-                child.append(parent1[i])
-            else:
-                child.append(parent2[i])
+        crossover_point = random.randint(0, len(nodes) - 1)
+        child = parent1[:crossover_point] + parent2[crossover_point:]
         return child
 
     # Mutation Function
     def mutate(candidate):
+        num_colors = len(set(candidate))
         for i in range(len(nodes)):
             if random.random() < mutation_rate:
-                candidate[i] = random.randint(0, m - 1)
+                candidate[i] = random.randint(0, num_colors - 1)
         return candidate
 
     # Initialize variables to track the best solution
@@ -235,8 +201,12 @@ def evolutionaryGraphColoring(m):
             best_fitness = min_fitness_in_population
             best_candidate = population[fitness_values.index(min_fitness_in_population)]
 
-            # Visualize the best candidate
-            color_assignment = [colors[color_index] for color_index in best_candidate]
+            # Generate colors based on the number of colors used in the best candidate
+            num_colors_used = len(set(best_candidate))
+            colors = [generate_random_color() for _ in range(num_colors_used)]
+            color_map = {color_index: colors[i] for i, color_index in enumerate(sorted(set(best_candidate)))}
+            color_assignment = [color_map[color_index] for color_index in best_candidate]
+
             draw_graph(color_assignment)
 
             # Display runtime and usage
@@ -246,7 +216,7 @@ def evolutionaryGraphColoring(m):
             runtime_text = runtime_info_font.render(f"Runtime: {runtime:.3f} s", True, (0, 0, 0))
             cpu_text = runtime_info_font.render(f"CPU Usage: {cpu_usage}%", True, (0, 0, 0))
             memory_text = runtime_info_font.render(f"Memory Usage: {memory_info.percent}%", True, (0, 0, 0))
-            color_text = runtime_info_font.render(f"Colors Used: {m}", True, (0,0,0))
+            color_text = runtime_info_font.render(f"Colors Used: {num_colors_used}", True, (0, 0, 0))
             screen.fill((255, 255, 255), (width - 220, 10, 210, 90))  # Clear the area before writing new info
             screen.blit(runtime_text, (width - 200, 20))
             screen.blit(cpu_text, (width - 200, 50))
@@ -254,9 +224,9 @@ def evolutionaryGraphColoring(m):
             screen.blit(color_text, (width - 200, 110))
             pygame.display.update()
 
-            # Check if a valid coloring is found (fitness == 0)
-            if best_fitness == 0:
-                print(f"Valid coloring found at generation {generation}")
+            # Check if a valid coloring is found (fitness == number of colors used)
+            if best_fitness == num_colors_used:
+                print(f"Valid coloring found at generation {generation} with {num_colors_used} colors")
                 break
 
         # Selection
@@ -285,7 +255,9 @@ def evolutionaryGraphColoring(m):
         pygame.time.delay(50)
 
     elapsed_time = time.time() - start_time_coloring
-    return elapsed_time
+    # Return the elapsed time and number of colors used
+    num_colors_used = len(set(best_candidate))
+    return elapsed_time, num_colors_used
 
 # Main loop for the pygame window
 def main():
@@ -340,14 +312,8 @@ def main():
                     monitor_thread = threading.Thread(target=monitor_performance, daemon=True)
                     monitor_thread.start()
 
-                    # Start the runtime timer
-                    start_time_coloring = time.time()
-
-                    # Calculate minimum number of colors
-                    min_colors = calculate_min_colors()
-
                     # Start evolutionary graph coloring
-                    elapsed_time = evolutionaryGraphColoring(min_colors)
+                    elapsed_time, num_colors_used = evolutionaryGraphColoring()
 
                     # Set flags to stop monitoring and display
                     graph_colored = True
@@ -372,7 +338,7 @@ def main():
                             "Runtime_s": f"{elapsed_time:.3f}",
                             "CPU_Usage_percent": f"{max_cpu_usage}",
                             "Memory_Usage_MB": f"{max_mem_usage:.2f}",
-                            "Colors_Used": min_colors
+                            "Colors_Used": num_colors_used
                         })
 
                     print(f"Performance data logged at {timestamp}")
