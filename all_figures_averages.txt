@@ -1,0 +1,3 @@
+Figure: large_5, Nodes: 300, Edges: 22543, Avg Elapsed Time: 5.616 seconds, Avg Colors Used: 222.33, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 7150.0, Run Count: 3
+Figure: large_10, Nodes: 300, Edges: 22482, Avg Elapsed Time: 6.819 seconds, Avg Colors Used: 218.75, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 8662.5, Run Count: 4
+Figure: small_1, Nodes: 20, Edges: 80, Avg Elapsed Time: 0.002 seconds, Avg Colors Used: 14.80, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 80.0, Run Count: 5

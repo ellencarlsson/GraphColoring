@@ -1,0 +1,21 @@
+Elapsed Time: 7.252 seconds
+Colors Used: 233
+Best Fitness: 0
+Total Fitness Evaluations: 9300
+Nodes: 300
+Edges: 22543
+------
+Elapsed Time: 5.412 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 6900
+Nodes: 300
+Edges: 22543
+------
+Elapsed Time: 4.184 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 5250
+Nodes: 300
+Edges: 22543
+------

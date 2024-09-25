@@ -1,1 +1,0 @@
-Figure: small_1, Nodes: 20, Edges: 80, Average Colors Used: 5, Run Count: 8
