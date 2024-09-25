@@ -37,36 +37,32 @@ edges_large = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 4),
 
 import random
 
-# Generate 100 node positions in a grid-like structure
-nodes_XL = [(x * 100 + 50, y * 100 + 50) for y in range(10) for x in range(10)]
+# Generate 200 node positions in a grid-like structure
+nodes_XL = [(x * 60 + 50, y * 60 + 50) for y in range(10) for x in range(20)]
 
-# Generate edges connecting adjacent nodes in a grid
+# Initialize the list of edges connecting adjacent nodes in the grid
 edges_XL = []
 
-# Connect horizontal edges (node n to n+1)
-for y in range(10):
-    for x in range(9):  # 9 because we're connecting adjacent horizontally, no edge for the last node in a row
-        node1 = y * 10 + x
-        node2 = y * 10 + x + 1
+# Connect horizontal edges (node n to n+1 in the same row)
+for y in range(10):  # Loop through each row
+    for x in range(19):  # Only up to the second-to-last node in each row (x = 0 to 18)
+        node1 = y * 20 + x  # The current node
+        node2 = node1 + 1  # The node to the right
         edges_XL.append((node1, node2))
 
-# Connect vertical edges (node n to n+10)
-for x in range(10):
-    for y in range(9):  # 9 because we're connecting vertically, no edge for the last row
-        node1 = y * 10 + x
-        node2 = (y + 1) * 10 + x
+# Connect vertical edges (node n to n+20, meaning the node below)
+for y in range(9):  # Only up to the second-to-last row (y = 0 to 8)
+    for x in range(20):  # Loop through each column
+        node1 = y * 20 + x  # The current node
+        node2 = node1 + 20  # The node below
         edges_XL.append((node1, node2))
 
-# Optionally add some random diagonal edges for variety
-for _ in range(20):  # Add 20 random diagonal connections
-    node1 = random.randint(0, 99)
-    node2 = random.randint(0, 99)
+# Optionally, add some random diagonal edges for variety
+for _ in range(4):  # Add 10 random diagonal connections
+    node1 = random.randint(0, 199)
+    node2 = random.randint(0, 199)
     if node1 != node2 and (node1, node2) not in edges_XL and (node2, node1) not in edges_XL:
         edges_XL.append((node1, node2))
-
-# Print nodes and edges to visualize or use in a graph algorithm
-print("Nodes:", nodes_large)
-print("Edges:", edges_XL)
 
 
 # Define all the graph examples (nodes and edges)

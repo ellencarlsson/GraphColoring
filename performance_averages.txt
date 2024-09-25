@@ -1,3 +1,4 @@
 Figure: pentagon, Average Runtime: 0.003 s, Average CPU Usage: 4.92%, Average Memory Usage: 105.54 MB, Average Colors Used: 3.00, Run Count: 80
 Figure: large, Average Runtime: 0.086 s, Average CPU Usage: 11.44%, Average Memory Usage: 105.26 MB, Average Colors Used: 3.00, Run Count: 11
-Figure: XL, Average Runtime: 76.228 s, Average CPU Usage: 59.60%, Average Memory Usage: 106.42 MB, Average Colors Used: 3.00, Run Count: 1
+Figure: bipartite, Average Runtime: 0.104 s, Average CPU Usage: 60.92%, Average Memory Usage: 106.23 MB, Average Colors Used: 2.00, Run Count: 25
+Figure: XL, Average Runtime: 4.364 s, Average CPU Usage: 100.52%, Average Memory Usage: 110.59 MB, Average Colors Used: 4.31, Run Count: 86
