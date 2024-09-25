@@ -7,22 +7,14 @@ import random
 import setofnodes
 import csv
 import os
-import math
 
 # Initialize Pygame
 pygame.init()
-width, height = 1400, 800
+width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Interactive Graph Coloring")
 
-# pentagon
-# bipartite
-# grid
-# large
-# star
-# complete
-# XL
-
+# Figures: "pentagon", "bipartite", "grid", "large", "star", "complete"
 figure = "XL"
 
 # Variables
@@ -44,51 +36,15 @@ monitor_lock = threading.Lock()
 CSV_FILE = f"{figure}_performance_data.csv"
 AVERAGE_FILE = "performance_averages.txt"
 
-mainpath = "DIMACS_graphs/"
-dimacs_path = mainpath + "small_2.txt"
-
 # Define fieldnames for CSV
 CSV_FIELDNAMES = ["Timestamp", "Runtime_s", "CPU_Usage_percent", "Memory_Usage_MB", "Colors_Used"]
 
 def init_adj_matrix_and_list():
-    """Load the graph from the DIMACS file and initialize adjacency matrix and adjacency list."""
-    global nodes, edges, adj_matrix, adj_list
-
-    nodes = []
-    edges = []
-
-    with open(dimacs_path, 'r') as f:
-        for line in f:
-            # Skip comment lines
-            if line.startswith('c'):
-                continue
-            # Parse the problem line (p edge <num_vertices> <num_edges>)
-            elif line.startswith('p edge'):
-                _, _, num_vertices, num_edges = line.strip().split()
-                num_vertices = int(num_vertices)  # Get the number of vertices
-
-                # Use a circular layout to evenly space nodes around the screen
-                radius = min(width, height) // 2 - 50  # Set a radius smaller than half the screen size
-                center_x, center_y = width // 2, height // 2  # Center of the screen
-                
-                for i in range(num_vertices):
-                    angle = 2 * math.pi * i / num_vertices  # Angle for each node
-                    x = int(center_x + radius * math.cos(angle))  # Polar to Cartesian
-                    y = int(center_y + radius * math.sin(angle))
-                    nodes.append((x, y))
-
-            # Parse edge lines (e <node1> <node2>)
-            elif line.startswith('e'):
-                _, node1, node2 = line.strip().split()
-                node1 = int(node1) - 1  # Convert to 0-based index
-                node2 = int(node2) - 1  # Convert to 0-based index
-                edges.append((node1, node2))  # Add the edge to the edges list
-
-    # Initialize adjacency matrix and adjacency list
+    """Initialize adjacency matrix and adjacency list."""
+    global adj_matrix, adj_list
     n = len(nodes)
     adj_matrix = [[0 for _ in range(n)] for _ in range(n)]
     adj_list = [[] for _ in range(n)]
-    
     for edge in edges:
         node1, node2 = edge
         adj_matrix[node1][node2] = 1
@@ -195,7 +151,7 @@ def verify_coloring(candidate):
 def evolutionary_graph_coloring():
     population_size = 50  # Balanced population size
     max_generations = 1000  # Sufficient generations for convergence
-    mutation_rate = 0.005  # Lower mutation rate for stability
+    mutation_rate = 0.05  # Lower mutation rate for stability
     max_colors = len(nodes)  # Maximum possible colors
 
     # Start timing
