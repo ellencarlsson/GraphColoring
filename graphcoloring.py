@@ -40,22 +40,25 @@ max_mem_usage = 0.0
 monitor_stop_flag = False
 monitor_lock = threading.Lock()
 
+mainpath = "DIMACS_graphs/"
+dimacs = "small_1"
+dimacs_path = mainpath + dimacs + ".txt"
+
 # CSV File Path
-CSV_FILE = f"{figure}_performance_data.csv"
+CSV_FILE = f"{dimacs}_performance_data.csv"
 AVERAGE_FILE = "performance_averages.txt"
 
-mainpath = "DIMACS_graphs/"
-dimacs_path = mainpath + "small_2.txt"
-
 # Define fieldnames for CSV
-CSV_FIELDNAMES = ["Timestamp", "Runtime_s", "CPU_Usage_percent", "Memory_Usage_MB", "Colors_Used"]
+CSV_FIELDNAMES = ["Runtime_s", "Nodes", "Edges", "Colors_Used"]
 
 def init_adj_matrix_and_list():
-    """Load the graph from the DIMACS file and initialize adjacency matrix and adjacency list."""
-    global nodes, edges, adj_matrix, adj_list
+    """Load the graph from the DIMACS file and initialize adjacency matrix and adjacency list in a rectangular layout."""
+    global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges  # Declare global variables
 
     nodes = []
     edges = []
+    numOfNodes = 0  # Initialize with default values
+    numOfEdges = 0
 
     with open(dimacs_path, 'r') as f:
         for line in f:
@@ -65,17 +68,25 @@ def init_adj_matrix_and_list():
             # Parse the problem line (p edge <num_vertices> <num_edges>)
             elif line.startswith('p edge'):
                 _, _, num_vertices, num_edges = line.strip().split()
-                num_vertices = int(num_vertices)  # Get the number of vertices
+                numOfNodes = int(num_vertices)  # Store number of nodes globally
+                numOfEdges = int(num_edges)  # Store number of edges globally
+                num_vertices = int(num_vertices)
 
-                # Use a circular layout to evenly space nodes around the screen
-                radius = min(width, height) // 2 - 50  # Set a radius smaller than half the screen size
-                center_x, center_y = width // 2, height // 2  # Center of the screen
-                
+                # Calculate grid layout dimensions
+                num_columns = math.ceil(math.sqrt(num_vertices))  # Number of columns in grid
+                num_rows = math.ceil(num_vertices / num_columns)  # Number of rows in grid
+
+                # Calculate the spacing between nodes
+                x_spacing = width // (num_columns + 1)
+                y_spacing = height // (num_rows + 1)
+
+                # Generate node positions in the grid
                 for i in range(num_vertices):
-                    angle = 2 * math.pi * i / num_vertices  # Angle for each node
-                    x = int(center_x + radius * math.cos(angle))  # Polar to Cartesian
-                    y = int(center_y + radius * math.sin(angle))
-                    nodes.append((x, y))
+                    row = i // num_columns
+                    col = i % num_columns
+                    x = (col + 1) * x_spacing  # X-coordinate based on column
+                    y = (row + 1) * y_spacing  # Y-coordinate based on row
+                    nodes.append((x, y))  # Store the node's position
 
             # Parse edge lines (e <node1> <node2>)
             elif line.startswith('e'):
@@ -83,6 +94,7 @@ def init_adj_matrix_and_list():
                 node1 = int(node1) - 1  # Convert to 0-based index
                 node2 = int(node2) - 1  # Convert to 0-based index
                 edges.append((node1, node2))  # Add the edge to the edges list
+
 
     # Initialize adjacency matrix and adjacency list
     n = len(nodes)
@@ -95,6 +107,9 @@ def init_adj_matrix_and_list():
         adj_matrix[node2][node1] = 1  # Assuming an undirected graph
         adj_list[node1].append(node2)
         adj_list[node2].append(node1)
+
+    
+    
 
 # Function to draw the graph nodes and edges
 def draw_graph(color_assignment):
@@ -159,6 +174,8 @@ def monitor_performance():
 # Function to calculate averages from the CSV file
 def calculate_averages(csv_file):
     runtime_sum = 0.0
+    nodes = 0
+    edges = 0
     cpu_sum = 0.0
     mem_sum = 0.0
     colors_sum = 0
@@ -168,9 +185,9 @@ def calculate_averages(csv_file):
         reader = csv.DictReader(f)
         for row in reader:
             runtime_sum += float(row["Runtime_s"])
-            cpu_sum += float(row["CPU_Usage_percent"])
+            """cpu_sum += float(row["CPU_Usage_percent"])
             mem_sum += float(row["Memory_Usage_MB"])
-            colors_sum += int(row["Colors_Used"])
+            colors_sum += int(row["Colors_Used"])"""
             count += 1
 
     if count == 0:
@@ -417,10 +434,9 @@ def main():
                                 # Write header if the file does not exist or is empty
                                 writer.writeheader()
                             writer.writerow({
-                                "Timestamp": timestamp,
                                 "Runtime_s": f"{elapsed_time:.3f}",
-                                "CPU_Usage_percent": f"{max_cpu_usage}",
-                                "Memory_Usage_MB": f"{max_mem_usage:.2f}",
+                                "Nodes": f"{numOfNodes}",
+                                "Edges": f"{numOfEdges}",
                                 "Colors_Used": num_colors_used
                             })
 
@@ -444,7 +460,7 @@ def main():
 
                             # Check if the figure's average data already exists in the file
                             for line in lines:
-                                if f"Figure: {figure}" in line:
+                                if f"Figure: {dimacs}" in line:
                                     # Extract the current run count from the line (if present)
                                     split_line = line.split(", ")
                                     if "Run Count" in line:
@@ -455,11 +471,10 @@ def main():
                                         run_count = 1  # Handle the case where no count is present
 
                                     # Overwrite the line with new average data and increment run count
-                                    new_line = (f"Figure: {figure}, "
-                                                f"Average Runtime: {avg_runtime:.3f} s, "
-                                                f"Average CPU Usage: {avg_cpu:.2f}%, "
-                                                f"Average Memory Usage: {avg_mem:.2f} MB, "
-                                                f"Average Colors Used: {avg_colors:.2f}, "
+                                    new_line = (f"Figure: {dimacs}, "
+                                                f"Nodes: {numOfNodes}, "
+                                                f"Edges: {numOfEdges}, "
+                                                f"Average Colors Used: {num_colors_used}, "
                                                 f"Run Count: {run_count}\n")
                                     new_lines.append(new_line)
                                     figure_found = True
@@ -469,7 +484,7 @@ def main():
 
                             # If the figure was not found, append the new average data and set run count to 1
                             if not figure_found:
-                                new_line = (f"Figure: {figure}, "
+                                new_line = (f"Figure: {dimacs}, "
                                             f"Average Runtime: {avg_runtime:.3f} s, "
                                             f"Average CPU Usage: {avg_cpu:.2f}%, "
                                             f"Average Memory Usage: {avg_mem:.2f} MB, "
@@ -482,8 +497,8 @@ def main():
                                 f.writelines(new_lines)
 
                             avg_timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-                            print(f"Averages for Figure {figure} logged/updated at {avg_timestamp}")
-                            print(f"Run Count for Figure {figure}: {run_count}")
+                            print(f"Averages for Figure {dimacs} logged/updated at {avg_timestamp}")
+                            print(f"Run Count for Figure {dimacs}: {run_count}")
                         else:
                             print("No data available to calculate averages.")
                     else:
