@@ -18,61 +18,50 @@ selected_node = None  # Used to track when a node is selected to create edges
 stop_flag = False  # Flag to control runtime updates
 runtime_info_font = pygame.font.SysFont(None, 25)
 
-# Performance Monitoring Variables
-
 monitor_stop_flag = False
 monitor_lock = threading.Lock()
 
 mainpath = "DIMACS_graphs/"
-dimacs = "small_1"
+dimacs = "large_5"
 dimacs_path = mainpath + dimacs + ".txt"
 
 
 def init_adj_matrix_and_list(dimacs_path):
-    """Load the graph from the DIMACS file and initialize adjacency matrix and adjacency list in a rectangular layout."""
-    global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges  # Declare global variables
+    global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges 
 
     nodes = []
     edges = []
-    numOfNodes = 0  # Initialize with default values
+    numOfNodes = 0  
     numOfEdges = 0
 
     with open(dimacs_path, 'r') as f:
         for line in f:
-            # Skip comment lines
-            if line.startswith('c'):
-                continue
-            # Parse the problem line (p edge <num_vertices> <num_edges>)
-            elif line.startswith('p edge'):
-                _, _, num_vertices, num_edges = line.strip().split()
-                numOfNodes = int(num_vertices)  # Store number of nodes globally
-                numOfEdges = int(num_edges)  # Store number of edges globally
-                num_vertices = int(num_vertices)
 
-                # Calculate grid layout dimensions
-                num_columns = math.ceil(math.sqrt(num_vertices))  # Number of columns in grid
-                num_rows = math.ceil(num_vertices / num_columns)  # Number of rows in grid
+            if line.startswith('p edge'):
+                _, _, num_nodes, num_edges = line.strip().split()
+                numOfNodes = int(num_nodes)  
+                numOfEdges = int(num_edges)  
+                num_nodes = int(num_nodes)
 
-                # Calculate the spacing between nodes
+                num_columns = math.ceil(math.sqrt(num_nodes))  
+                num_rows = math.ceil(num_nodes / num_columns)  
+
                 x_spacing = width // (num_columns + 1)
                 y_spacing = height // (num_rows + 1)
 
-                # Generate node positions in the grid
-                for i in range(num_vertices):
+                for i in range(num_nodes):
                     row = i // num_columns
                     col = i % num_columns
-                    x = (col + 1) * x_spacing  # X-coordinate based on column
-                    y = (row + 1) * y_spacing  # Y-coordinate based on row
-                    nodes.append((x, y))  # Store the node's position
+                    x = (col + 1) * x_spacing 
+                    y = (row + 1) * y_spacing  
+                    nodes.append((x, y)) 
 
-            # Parse edge lines (e <node1> <node2>)
             elif line.startswith('e'):
                 _, node1, node2 = line.strip().split()
-                node1 = int(node1) - 1  # Convert to 0-based index
-                node2 = int(node2) - 1  # Convert to 0-based index
-                edges.append((node1, node2))  # Add the edge to the edges list
+                node1 = int(node1) - 1  
+                node2 = int(node2) - 1 
+                edges.append((node1, node2))  
 
-    # Initialize adjacency matrix and adjacency list
     n = len(nodes)
     adj_matrix = [[0 for _ in range(n)] for _ in range(n)]
     adj_list = [[] for _ in range(n)]
@@ -80,13 +69,12 @@ def init_adj_matrix_and_list(dimacs_path):
     for edge in edges:
         node1, node2 = edge
         adj_matrix[node1][node2] = 1
-        adj_matrix[node2][node1] = 1  # Assuming an undirected graph
+        adj_matrix[node2][node1] = 1 
         adj_list[node1].append(node2)
         adj_list[node2].append(node1)
 
-# Incremental Fitness Function
+# Fitness function calculates the number of color conflicts and we want value 0
 def fitness(candidate, changed_nodes):
-    """Fitness function counts the number of color conflicts by iterating over affected edges only."""
     conflicts = 0
     for node in changed_nodes:
         for neighbor in adj_list[node]:
@@ -108,6 +96,24 @@ def evaluate_population(population, fitness_values, changed_nodes_list):
         ]
         for i, future in enumerate(futures):
             fitness_values[i] = future.result()
+
+def draw_graph(color_assignment):
+    screen.fill((255, 255, 255)) 
+
+    for edge in edges:
+        node1, node2 = edge
+        pygame.draw.line(screen, (0, 0, 0), nodes[node1], nodes[node2], 2) 
+
+    # Draw nodes with the color assigned from the evolutionary algorithm
+    for i, pos in enumerate(nodes):
+        pygame.draw.circle(screen, (0, 0, 0), pos, 22)  # Draw outline in black
+        pygame.draw.circle(screen, color_assignment[i], pos, 20)  # Draw node with its color
+        # Display node index inside the node
+        text = pygame.font.SysFont(None, 20).render(str(i), True, (0, 0, 0))
+        screen.blit(text, (pos[0] - 5, pos[1] - 10))
+
+    # Update the display after drawing everything
+    pygame.display.update()
 
 # Evolutionary Graph Coloring with parallelization and incremental evaluation
 def evolutionary_graph_coloring():
@@ -178,15 +184,30 @@ def evolutionary_graph_coloring():
     elapsed_time = time.time() - start_time_coloring
     num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
 
-    # Return detailed information
+        # Return detailed information
+    if found_valid_coloring:
+            # Ensure the number of colors generated matches the number of unique colors in the best candidate
+            max_color_index = max(best_candidate)  # Find the highest color index used in best_candidate
+            colors = [generate_random_color() for _ in range(max_color_index + 1)]  # Generate enough colors
+            
+            # Map each color index to a color
+            color_assignment = [colors[color_index] for color_index in best_candidate]
+
+            # Draw the graph with the found color assignment
+            draw_graph(color_assignment)
+
+
     return {
         "Elapsed Time": elapsed_time,
-        "Colors Used": num_colors_used,
+        "Colors Used": num_colors_used if found_valid_coloring else 0,
         "Best Fitness": best_fitness,
         "Fitness Evaluations": fitness_evaluations,
         "Nodes": numOfNodes,
         "Edges": numOfEdges
     }
+
+
+
 
 
 # Tournament Selection
@@ -318,7 +339,6 @@ def calculate_averages_from_log(dimacs):
 
     print(f"Averages updated in {master_file_path}")
 
-# Main function
 def main():
     global selected_node, stop_flag
 
@@ -334,5 +354,16 @@ def main():
     # Update the master file with averages from all figures
     calculate_averages_from_log(dimacs)
 
+    # Event loop to keep the window open
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        pygame.display.flip()  # Keep updating the screen
+    pygame.quit()
+
 if __name__ == "__main__":
     main()
+
+
