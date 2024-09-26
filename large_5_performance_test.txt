@@ -26,3 +26,17 @@ Total Fitness Evaluations: 8300
 Nodes: 300
 Edges: 22543
 ------
+Elapsed Time: 5.055 seconds
+Colors Used: 204
+Best Fitness: 0
+Total Fitness Evaluations: 6350
+Nodes: 300
+Edges: 22543
+------
+Elapsed Time: 4.934 seconds
+Colors Used: 212
+Best Fitness: 0
+Total Fitness Evaluations: 6400
+Nodes: 300
+Edges: 22543
+------
