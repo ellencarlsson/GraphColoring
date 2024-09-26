@@ -5,6 +5,8 @@ import random
 import os
 import math
 from concurrent.futures import ThreadPoolExecutor
+import graphCreator
+import evolutionComputation
 
 pygame.init()
 width, height = 1400, 800
@@ -14,16 +16,16 @@ pygame.display.set_caption("Interactive Graph Coloring")
 
 
 # Function to draw the graph
-def draw_graph(color_assignment, nodes, edges):
+def draw_graph(color_assignment):
     screen.fill((255, 255, 255))  # Clear screen with white background
 
     # Draw edges first
-    for edge in edges:
+    for edge in evolutionComputation.edges:
         node1, node2 = edge
-        pygame.draw.line(screen, (0, 0, 0),nodes[node1],nodes[node2], 2)  # Black edges
+        pygame.draw.line(screen, (0, 0, 0), evolutionComputation.nodes[node1], evolutionComputation.nodes[node2], 2)  # Black edges
 
     # Draw nodes with the color assigned from the evolutionary algorithm
-    for i, pos in enumerate(nodes):
+    for i, pos in enumerate(evolutionComputation.nodes):
         pygame.draw.circle(screen, (0, 0, 0), pos, 22)  # Draw outline in black
         pygame.draw.circle(screen, color_assignment[i], pos, 20)  # Draw node with its color
         # Display node index inside the node

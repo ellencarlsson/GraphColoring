@@ -1,0 +1,7 @@
+Elapsed Time: 0.005 seconds
+Colors Used: 16
+Best Fitness: 0
+Total Fitness Evaluations: 150
+Nodes: 20
+Edges: 100
+------

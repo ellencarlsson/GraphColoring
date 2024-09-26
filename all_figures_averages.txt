@@ -1,3 +1,3 @@
-Figure: large_5, Nodes: 300, Edges: 22543, Avg Elapsed Time: 5.573 seconds, Avg Colors Used: 217.17, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 7083.333333333333, Run Count: 6
-Figure: large_10, Nodes: 300, Edges: 22482, Avg Elapsed Time: 6.819 seconds, Avg Colors Used: 218.75, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 8662.5, Run Count: 4
-Figure: small_1, Nodes: 20, Edges: 80, Avg Elapsed Time: 0.002 seconds, Avg Colors Used: 14.57, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 78.57142857142857, Run Count: 7
+Figure: small_1, Nodes: 20, Edges: 80, Avg Elapsed Time: 0.002 seconds, Avg Colors Used: 14.40, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 71.05263157894737, Run Count: 57
+Figure: small_2, Nodes: 20, Edges: 90, Avg Elapsed Time: 0.003 seconds, Avg Colors Used: 14.25, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 103.50877192982456, Run Count: 57
+Figure: small_3, Nodes: 20, Edges: 100, Avg Elapsed Time: 0.005 seconds, Avg Colors Used: 16.00, Avg Best Fitness: 0.0, Avg Fitness Evaluations: 150.0, Run Count: 1

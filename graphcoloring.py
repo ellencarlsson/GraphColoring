@@ -26,62 +26,6 @@ dimacs = "large_5"
 dimacs_path = mainpath + dimacs + ".txt"
 
 
-def init_adj_matrix_and_list(dimacs_path):
-    global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges 
-
-    nodes = []
-    edges = []
-    numOfNodes = 0  
-    numOfEdges = 0
-
-    with open(dimacs_path, 'r') as f:
-        for line in f:
-
-            if line.startswith('p edge'):
-                _, _, num_nodes, num_edges = line.strip().split()
-                numOfNodes = int(num_nodes)  
-                numOfEdges = int(num_edges)  
-                num_nodes = int(num_nodes)
-
-                num_columns = math.ceil(math.sqrt(num_nodes))  
-                num_rows = math.ceil(num_nodes / num_columns)  
-
-                x_spacing = width // (num_columns + 1)
-                y_spacing = height // (num_rows + 1)
-
-                for i in range(num_nodes):
-                    row = i // num_columns
-                    col = i % num_columns
-                    x = (col + 1) * x_spacing 
-                    y = (row + 1) * y_spacing  
-                    nodes.append((x, y)) 
-
-            elif line.startswith('e'):
-                _, node1, node2 = line.strip().split()
-                node1 = int(node1) - 1  
-                node2 = int(node2) - 1 
-                edges.append((node1, node2))  
-
-    n = len(nodes)
-    adj_matrix = [[0 for _ in range(n)] for _ in range(n)]
-    adj_list = [[] for _ in range(n)]
-    
-    for edge in edges:
-        node1, node2 = edge
-        adj_matrix[node1][node2] = 1
-        adj_matrix[node2][node1] = 1 
-        adj_list[node1].append(node2)
-        adj_list[node2].append(node1)
-
-# Fitness function calculates the number of color conflicts and we want value 0
-def fitness(candidate, changed_nodes):
-    conflicts = 0
-    for node in changed_nodes:
-        for neighbor in adj_list[node]:
-            if candidate[node] == candidate[neighbor]:
-                conflicts += 1
-    return conflicts
-
 # Function to generate a random color
 def generate_random_color():
     """Generates a random RGB color."""
@@ -91,7 +35,7 @@ def generate_random_color():
 def evaluate_population(population, fitness_values, changed_nodes_list):
     with ThreadPoolExecutor() as executor:
         futures = [
-            executor.submit(fitness, candidate, changed_nodes_list[i])
+            executor.submit(evaluate_population.fitness, candidate, changed_nodes_list[i])
             for i, candidate in enumerate(population)
         ]
         for i, future in enumerate(futures):

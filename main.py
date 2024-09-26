@@ -2,9 +2,10 @@ import logging
 import evolutionComputation
 import pygame
 import recordsHolder
+import graphCreator
 
 mainpath = "DIMACS_graphs/"
-dimacs = "large_5"
+dimacs = "small_3"
 dimacs_path = mainpath + dimacs + ".txt"
 
 def main():
@@ -32,4 +33,5 @@ def main():
     pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    for i in range(60):
+        main()
