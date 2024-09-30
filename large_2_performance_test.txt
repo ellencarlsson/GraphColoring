@@ -1,0 +1,420 @@
+Elapsed Time: 6.035 seconds
+Colors Used: 206
+Best Fitness: 0
+Total Fitness Evaluations: 7350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.068 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 5100
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 9.814 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 12250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.251 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 6550
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.175 seconds
+Colors Used: 217
+Best Fitness: 0
+Total Fitness Evaluations: 8850
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.354 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 6650
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.564 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 8200
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.299 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 9050
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.841 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 9750
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.433 seconds
+Colors Used: 212
+Best Fitness: 0
+Total Fitness Evaluations: 9300
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 10.958 seconds
+Colors Used: 223
+Best Fitness: 0
+Total Fitness Evaluations: 13550
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.438 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 9250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.934 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 9850
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.459 seconds
+Colors Used: 222
+Best Fitness: 0
+Total Fitness Evaluations: 7950
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.216 seconds
+Colors Used: 217
+Best Fitness: 0
+Total Fitness Evaluations: 5250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.130 seconds
+Colors Used: 224
+Best Fitness: 0
+Total Fitness Evaluations: 8850
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 8.353 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 10350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.789 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 8450
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.411 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 8000
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.139 seconds
+Colors Used: 217
+Best Fitness: 0
+Total Fitness Evaluations: 8900
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 8.600 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 10750
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.305 seconds
+Colors Used: 216
+Best Fitness: 0
+Total Fitness Evaluations: 7900
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.821 seconds
+Colors Used: 226
+Best Fitness: 0
+Total Fitness Evaluations: 8550
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.309 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 5400
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.275 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 6550
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.924 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 7350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.829 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 9850
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.869 seconds
+Colors Used: 216
+Best Fitness: 0
+Total Fitness Evaluations: 6050
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.629 seconds
+Colors Used: 222
+Best Fitness: 0
+Total Fitness Evaluations: 7000
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.482 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 8050
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.022 seconds
+Colors Used: 227
+Best Fitness: 0
+Total Fitness Evaluations: 8750
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.869 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 6100
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.892 seconds
+Colors Used: 222
+Best Fitness: 0
+Total Fitness Evaluations: 7400
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.942 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 7450
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.559 seconds
+Colors Used: 225
+Best Fitness: 0
+Total Fitness Evaluations: 8250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.454 seconds
+Colors Used: 226
+Best Fitness: 0
+Total Fitness Evaluations: 8050
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 9.868 seconds
+Colors Used: 208
+Best Fitness: 0
+Total Fitness Evaluations: 12300
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.194 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 8950
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.747 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 7200
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 8.930 seconds
+Colors Used: 217
+Best Fitness: 0
+Total Fitness Evaluations: 11150
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.833 seconds
+Colors Used: 223
+Best Fitness: 0
+Total Fitness Evaluations: 8500
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 3.816 seconds
+Colors Used: 225
+Best Fitness: 0
+Total Fitness Evaluations: 4750
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.107 seconds
+Colors Used: 222
+Best Fitness: 0
+Total Fitness Evaluations: 6350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.476 seconds
+Colors Used: 221
+Best Fitness: 0
+Total Fitness Evaluations: 9350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 9.052 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 11300
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.070 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 6250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.445 seconds
+Colors Used: 220
+Best Fitness: 0
+Total Fitness Evaluations: 9300
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.201 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 6500
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.379 seconds
+Colors Used: 217
+Best Fitness: 0
+Total Fitness Evaluations: 6700
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 9.146 seconds
+Colors Used: 216
+Best Fitness: 0
+Total Fitness Evaluations: 11350
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.697 seconds
+Colors Used: 218
+Best Fitness: 0
+Total Fitness Evaluations: 5850
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.845 seconds
+Colors Used: 213
+Best Fitness: 0
+Total Fitness Evaluations: 8550
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 8.173 seconds
+Colors Used: 223
+Best Fitness: 0
+Total Fitness Evaluations: 10250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 6.755 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 8450
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.743 seconds
+Colors Used: 215
+Best Fitness: 0
+Total Fitness Evaluations: 7150
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.376 seconds
+Colors Used: 216
+Best Fitness: 0
+Total Fitness Evaluations: 5500
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 4.733 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 5900
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 8.209 seconds
+Colors Used: 219
+Best Fitness: 0
+Total Fitness Evaluations: 10250
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 7.526 seconds
+Colors Used: 214
+Best Fitness: 0
+Total Fitness Evaluations: 9400
+Nodes: 300
+Edges: 22327
+------
+Elapsed Time: 5.208 seconds
+Colors Used: 221
+Best Fitness: 0
+Total Fitness Evaluations: 6550
+Nodes: 300
+Edges: 22327
+------

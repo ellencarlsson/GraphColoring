@@ -301,6 +301,7 @@ def main():
     # Event loop to keep the window open
     running = True
     while running:
+        pygame.QUIT
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

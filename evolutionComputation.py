@@ -1,12 +1,13 @@
 import time
 import threading
 import random
-import os
+import matplotlib.pyplot as plt
+from datetime import datetime
 import math
+import os
 from concurrent.futures import ThreadPoolExecutor
-import graphCreator
-import convergence
 
+# Global variables
 adj_matrix = []  
 adj_list = []     
 selected_node = None  
@@ -18,7 +19,6 @@ monitor_lock = threading.Lock()
 
 def init_adj_matrix_and_list(dimacs_path):
     global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges 
-
 
     nodes = []
     edges = []
@@ -37,8 +37,8 @@ def init_adj_matrix_and_list(dimacs_path):
                 num_columns = math.ceil(math.sqrt(num_nodes))  
                 num_rows = math.ceil(num_nodes / num_columns)  
 
-                x_spacing = graphCreator.width // (num_columns + 1)
-                y_spacing = graphCreator.height // (num_rows + 1)
+                x_spacing = 800 // (num_columns + 1)
+                y_spacing = 800 // (num_rows + 1)
 
                 for i in range(num_nodes):
                     row = i // num_columns
@@ -64,7 +64,8 @@ def init_adj_matrix_and_list(dimacs_path):
         adj_list[node1].append(node2)
         adj_list[node2].append(node1)
 
-# Fitness function calculates the number of color conflicts and we want value 0
+
+
 def fitness(candidate, changed_nodes):
     conflicts = 0
     for node in changed_nodes:
@@ -72,7 +73,6 @@ def fitness(candidate, changed_nodes):
             if candidate[node] == candidate[neighbor]:
                 conflicts += 1
     return conflicts
-
 
 # Parallel Fitness Evaluation
 def evaluate_population(population, fitness_values, changed_nodes_list):
@@ -84,19 +84,10 @@ def evaluate_population(population, fitness_values, changed_nodes_list):
         for i, future in enumerate(futures):
             fitness_values[i] = future.result()
 
-# Fitness function calculates the number of color conflicts and we want value 0
-def fitness(candidate, changed_nodes):
-    conflicts = 0
-    for node in changed_nodes:
-        for neighbor in adj_list[node]:
-            if candidate[node] == candidate[neighbor]:
-                conflicts += 1
-    return conflicts
-
-def evolutionary_graph_coloring():
-    population_size = 50
-    max_generations = 1000
-    mutation_rate = 0.01
+def evolutionary_graph_coloring(figure):
+    population_size = 100  # Reduced to balance computational cost and diversity
+    max_generations = 1000  # Reduced due to the small size of the graph
+    mutation_rate = 0.02
     max_colors = len(nodes)
 
     # Start timing
@@ -113,6 +104,10 @@ def evolutionary_graph_coloring():
     found_valid_coloring = False
     fitness_evaluations = 0
 
+    # Initialize lists to store fitness values for plotting
+    average_fitness_per_generation = []
+    best_fitness_per_generation = []
+
     for generation in range(max_generations):
         # Create a list to track nodes that changed due to mutation
         changed_nodes_list = [list(range(len(nodes))) for _ in range(population_size)]
@@ -121,6 +116,13 @@ def evolutionary_graph_coloring():
         # Evaluate fitness in parallel
         evaluate_population(population, fitness_values, changed_nodes_list)
         fitness_evaluations += population_size  # Increment fitness evaluations counter
+
+        # Track fitness values for plotting
+        avg_fitness = sum(fitness_values) / population_size
+        best_gen_fitness = min(fitness_values)
+        
+        average_fitness_per_generation.append(avg_fitness)
+        best_fitness_per_generation.append(best_gen_fitness)
 
         # Find the best candidate
         min_fitness_in_population = min(fitness_values)
@@ -161,18 +163,10 @@ def evolutionary_graph_coloring():
     elapsed_time = time.time() - start_time_coloring
     num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
 
-        # Return detailed information
-    if found_valid_coloring:
-            # Ensure the number of colors generated matches the number of unique colors in the best candidate
-            max_color_index = max(best_candidate)  # Find the highest color index used in best_candidate
-            colors = [graphCreator.generate_random_color() for _ in range(max_color_index + 1)]  # Generate enough colors
-            
-            # Map each color index to a color
-            color_assignment = [colors[color_index] for color_index in best_candidate]
+    print(average_fitness_per_generation, best_fitness_per_generation)
 
-            # Draw the graph with the found color assignment
-            graphCreator.draw_graph(color_assignment)
-
+    saveRec(figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate)
+    #plot_fitness_vs_generation(figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate)
 
     return {
         "Elapsed Time": elapsed_time,
@@ -183,7 +177,90 @@ def evolutionary_graph_coloring():
         "Edges": numOfEdges
     }
 
-# Evolutionary Graph Coloring with parallelization and incremental evaluation
+def saveRec(figure, average_fitness, best_fitness, max_generations, population_size, mutation_rate, run_number=None, output_dir="output"):
+    generations = range(len(average_fitness))
+
+    # Create output directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Generate a unique filename for each run based on run_number or timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_id = f"run_{run_number}" if run_number is not None else f"run_{timestamp}"
+
+    # Saving fitness values to a text file with unique run identifier
+    fitness_file_path = os.path.join(output_dir, f"{figure}_{run_id}_fitness_values.txt")
+    with open(fitness_file_path, "w") as f:
+        f.write("Generation,Average Fitness,Best Fitness\n")
+        for gen, avg_fit, best_fit in zip(generations, average_fitness, best_fitness):
+            f.write(f"{gen},{avg_fit},{best_fit}\n")
+    print(f"Fitness values saved to {fitness_file_path}")
+
+def plot_fitness_vs_generation(figure, average_fitness, best_fitness, max_generations, population_size, mutation_rate, run_number=None, output_dir="output"):
+    generations = range(len(average_fitness))
+
+    # Create output directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Generate a unique filename for each run based on run_number or timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_id = f"run_{run_number}" if run_number is not None else f"run_{timestamp}"
+
+    # Saving fitness values to a text file with unique run identifier
+    fitness_file_path = os.path.join(output_dir, f"{figure}_{run_id}_fitness_values.txt")
+    with open(fitness_file_path, "w") as f:
+        f.write("Generation,Average Fitness,Best Fitness\n")
+        for gen, avg_fit, best_fit in zip(generations, average_fitness, best_fitness):
+            f.write(f"{gen},{avg_fit},{best_fit}\n")
+    print(f"Fitness values saved to {fitness_file_path}")
+
+    # Plot the average and best fitness with line style
+    plt.figure(figsize=(10, 6))
+    plt.plot(generations, average_fitness, label="Average Fitness", color="blue", linestyle="-", linewidth=2)
+    plt.plot(generations, best_fitness, label="Best Fitness", color="green", linestyle="-", linewidth=2)
+
+    # Title and labels
+    plt.title(f"Fitness and Generations for {figure}")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+
+    # Plotting a single point for average and best fitness
+    plt.scatter(generations, average_fitness, color="blue", label="Average Fitness")
+    plt.scatter(generations, best_fitness, color="green", label="Best Fitness")
+
+    # Ensure the Y-axis starts from 0 to show zero values
+    plt.ylim(bottom=0)
+
+    # Highlight when best fitness reaches zero (optional)
+    zero_fitness_generations = [gen for gen, fitness in enumerate(best_fitness) if fitness == 0]
+    for gen in zero_fitness_generations:
+        plt.axvline(x=gen, color='red', linestyle='--', label="Best Fitness = 0")
+
+    # Adding the parameters to the graph as text annotations
+    annotation_text = (
+        f"Population Size: {population_size}\n"
+        f"Max Generations: {max_generations}\n"
+        f"Mutation Rate: {mutation_rate}"
+    )
+
+    # Position the text box in the plot
+    plt.text(0.71, 0.75, annotation_text, horizontalalignment='left', verticalalignment='center',
+             transform=plt.gca().transAxes, bbox=dict(facecolor='white', alpha=1), fontsize=12)
+
+    # Adding grid and legend
+    plt.grid(True)
+    plt.legend()
+
+    # Save the plot as an image with unique run identifier
+    plot_file_path = os.path.join(output_dir, f"{figure}_{run_id}_fitness_plot.png")
+    plt.savefig(plot_file_path)
+    print(f"Plot saved to {plot_file_path}")
+
+    # Show the plot
+    plt.show()
+
+# Evolutionary Graph Coloring with parallelization and incremental evaluation (no visualization)
 def evolutionary_graph_coloring_with_convergence():
     population_size = 50
     max_generations = 20  # Adjust this for testing purposes
@@ -266,14 +343,7 @@ def evolutionary_graph_coloring_with_convergence():
         # Append this EA's fitness values to the list for plotting later
         fitness_values_list.append(fitness_values)
 
-    # Plot convergence of all EA runs (EA1, EA2, EA3)
-    """convergence.plot_convergence(
-        generations=generations,
-        fitness_values_list=fitness_values_list,
-        labels=ea_labels,
-        title='Convergence Analysis of Different EA Runs'
-    )"""
-
+    # No convergence plot, just return the data
     return {
         "Elapsed Time": elapsed_time,
         "Colors Used": num_colors_used if found_valid_coloring else 0,
@@ -307,6 +377,3 @@ def mutate(candidate, current_num_colors, mutation_rate):
             candidate[i] = random.randint(0, current_num_colors - 1)
             changed_nodes.append(i)
     return candidate, changed_nodes
-
-
-
