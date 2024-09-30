@@ -1,7 +1,6 @@
 import logging
 import evolutionComputation
 import pygame
-import recordsHolder
 
 mainpath = "DIMACS_graphs/"
 
@@ -36,10 +35,10 @@ def main():
     # Initialize adjacency matrix and list
     evolutionComputation.init_adj_matrix_and_list(dimacs_path)
 
-    #evolutionComputation.evolutionary_graph_coloring(dimacs)
+    evolutionComputation.evolutionary_graph_coloring(dimacs)
     evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs)
 
 
 if __name__ == "__main__":
-    #for i in range(1):
-    main()
+    for i in range(10):
+        main()

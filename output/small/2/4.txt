@@ -1,0 +1,11 @@
+Figure: small_2
+File Number: 4
+Max Generations: 1000
+Population Size: 100
+Mutation Rate: 0.02
+Colors Used: 12
+Runtime: 0.0036 s
+
+Generation,Average Fitness,Best Fitness
+0,9.12,2
+1,7.56,0

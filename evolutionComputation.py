@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
+import calculations
 
 # Global variables
 adj_matrix = []  
@@ -187,10 +188,11 @@ def evolutionary_graph_coloring(figure):
             break
 
     elapsed_time = time.time() - start_time_coloring
+    print(elapsed_time)
     num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
     print("heeej", num_colors_used)
 
-    store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used)
+    calculations.store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used)
 
 def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
     population_size = 100  # Reduced to balance computational cost and diversity
@@ -198,8 +200,11 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
     mutation_rate = 0.02
     max_colors = len(nodes)
 
-    # Start timing
+    # Start overall timing (just for reference, may not be needed)
     start_time_coloring = time.time()
+    
+    # Timer for improvement phases
+    improvement_time = 0
 
     best_overall_candidate = None
     best_overall_num_colors = max_colors
@@ -211,13 +216,15 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
         found_valid_coloring = False
         fitness_evaluations = 0
         if best_overall_num_colors != max_colors:
-
             local_max_colors = best_overall_num_colors
         else:
             local_max_colors = max_colors
 
         # Keep decreasing max_colors until we get a solution with conflicts > 0
         while local_max_colors > 1:
+            # Start measuring the time for this improvement phase
+            phase_start_time = time.time()
+
             # Initialize the population
             population = [
                 [random.randint(0, local_max_colors - 1) for _ in range(len(nodes))]
@@ -244,7 +251,7 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
                 # Track fitness values for plotting
                 avg_fitness = sum(fitness_values) / population_size
                 best_gen_fitness = min(fitness_values)
-                
+
                 average_fitness_per_generation.append(avg_fitness)
                 best_fitness_per_generation.append(best_gen_fitness)
 
@@ -284,7 +291,8 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
                 if found_valid_coloring:
                     break
 
-            elapsed_time = time.time() - start_time_coloring
+            # Measure the elapsed time for this improvement phase
+            phase_elapsed_time = time.time() - phase_start_time
             num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
             print(f"Trial {trial + 1}, Solution with {num_colors_used} colors.")
 
@@ -292,11 +300,15 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
                 print("Unable to find a conflict-free solution.")
                 break
 
-            # Update the best overall solution across trials
+            # If this trial resulted in an improvement, add the phase time to the total improvement time
             if found_valid_coloring and num_colors_used < best_overall_num_colors:
+                improvement_time += phase_elapsed_time
                 best_overall_num_colors = num_colors_used
                 best_overall_candidate = best_candidate
                 best_fitness_overall = best_fitness
+            else:
+                # If no improvement, we stop the timing here for the current trial
+                break
 
             # Decrease the number of colors for the next iteration
             local_max_colors = num_colors_used - 1
@@ -308,159 +320,17 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
 
     # Output the best result across all trials
     print(f"Best overall solution uses {best_overall_num_colors}")
-    store_fitness_values(True, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, best_overall_num_colors)
 
+    # Store fitness values only for the best overall solution after all trials are complete
+    calculations.store_fitness_values(
+        True,
+        figure, 
+        average_fitness_per_generation, 
+        best_fitness_per_generation, 
+        max_generations, 
+        population_size, 
+        mutation_rate, 
+        improvement_time,  # Pass the improvement time here
+        best_overall_num_colors
+    )
 
-
-# Function to find the latest file number and increment it
-def get_next_file_number(output_dir, figureCropped, numberCropped):
-    # Path to the directory containing the files
-    base_dir = os.path.join(output_dir, figureCropped, numberCropped)
-    
-    # Ensure the base directory exists, or create it
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
-        return 1  # If no previous files, start with 1
-
-    # Get the list of existing .txt files
-    existing_files = [int(f.split(".")[0]) for f in os.listdir(base_dir) if f.endswith(".txt") and f.split(".")[0].isdigit()]
-    
-    # Return the next file number (if no files, return 1)
-    return max(existing_files) + 1 if existing_files else 1
-
-# Function to save input parameters and fitness values for each run as .txt files
-def store_fitness_values(minColors, figure, average_fitness, best_fitness, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used, output_dir="output"):
-    generations = range(len(average_fitness))
-
-    print("hoo", num_colors_used)
-    # Extract figure and number before and after the underscore
-    figureCropped = re.match(r"([^_]+)_", figure)
-    if figureCropped:
-        figureCropped = figureCropped.group(1)
-    
-    numberCropped = re.match(r".*_(\d+)", figure)
-    if numberCropped:
-        numberCropped = numberCropped.group(1)
-
-    if minColors:
-        figureCropped = figureCropped + "_min_colors"
-
-    # Get the next file number based on existing .txt files
-    file_number = get_next_file_number(output_dir, figureCropped, numberCropped)
-    
-    # Define the new file path: output/figureCropped/numberCropped/file_number.txt
-    figure_dir = os.path.join(output_dir, figureCropped, numberCropped)
-    fitness_file_path = os.path.join(figure_dir, f"{file_number}.txt")
-
-    # Saving input parameters and fitness values to a text file
-    
-    with open(fitness_file_path, "w") as f:
-        # Store the input parameters at the top of the file
-        f.write(f"Figure: {figure}\n")
-        f.write(f"File Number: {file_number}\n")
-        f.write(f"Max Generations: {max_generations}\n")
-        f.write(f"Population Size: {population_size}\n")
-        f.write(f"Mutation Rate: {mutation_rate}\n")
-        f.write(f"Colors Used: {num_colors_used}\n")
-        f.write(f"Runtime: {elapsed_time:.2f} s\n")
-        f.write("\n")  # Separate parameters from the data
-        
-        # Store the fitness values per generation
-        f.write("Generation,Average Fitness,Best Fitness\n")
-        for gen, avg_fit, best_fit in zip(generations, average_fitness, best_fitness):
-            f.write(f"{gen},{avg_fit},{best_fit}\n")
-
-
-
-# Evolutionary Graph Coloring with parallelization and incremental evaluation (no visualization)
-def evolutionary_graph_coloring_with_convergence():
-    population_size = 50
-    max_generations = 20  # Adjust this for testing purposes
-    mutation_rate = 0.01
-    max_colors = len(nodes)
-
-    # Initialize lists to store convergence data for different EAs
-    generations = list(range(max_generations))
-    fitness_values_list = []
-    ea_labels = ['EA1', 'EA2', 'EA3']  # You can change this to more EAs if necessary
-
-    for ea_run in range(3):  # Running EA1, EA2, EA3
-        # Start timing
-        start_time_coloring = time.time()
-
-        fitness_values = []  # To store fitness values per generation for this EA run
-
-        # Initialize the population
-        population = [
-            [random.randint(0, max_colors - 1) for _ in range(len(nodes))]
-            for _ in range(population_size)
-        ]
-
-        best_candidate = None
-        best_fitness = float('inf')
-        found_valid_coloring = False
-        fitness_evaluations = 0
-
-        for generation in range(max_generations):
-            # Create a list to track nodes that changed due to mutation
-            changed_nodes_list = [list(range(len(nodes))) for _ in range(population_size)]
-            fitness_values_generation = [0] * population_size
-
-            # Evaluate fitness in parallel
-            evaluate_population(population, fitness_values_generation, changed_nodes_list)
-            fitness_evaluations += population_size  # Increment fitness evaluations counter
-
-            # Find the best candidate
-            min_fitness_in_population = min(fitness_values_generation)
-            if min_fitness_in_population < best_fitness:
-                best_fitness = min_fitness_in_population
-                best_candidate = population[fitness_values_generation.index(min_fitness_in_population)]
-                if best_fitness == 0:
-                    found_valid_coloring = True
-                    break
-
-            # Track best fitness value for this generation
-            fitness_values.append(min_fitness_in_population)
-
-            # Select parents using tournament selection
-            selected_parents = tournament_selection(population, fitness_values_generation)
-
-            # Generate new population
-            new_population = []
-            for i in range(0, population_size, 2):
-                parent1 = selected_parents[i]
-                parent2 = selected_parents[i + 1 if i + 1 < population_size else 0]
-
-                # Crossover
-                child1, child2 = crossover(parent1, parent2)
-
-                # Mutation
-                child1, changed_nodes_child1 = mutate(child1, max_colors, mutation_rate)
-                child2, changed_nodes_child2 = mutate(child2, max_colors, mutation_rate)
-
-                new_population.extend([child1, child2])
-                changed_nodes_list.extend([changed_nodes_child1, changed_nodes_child2])
-
-            # Elitism: Keep the best candidate from the previous generation
-            new_population[0] = best_candidate.copy()
-            population = new_population
-
-            # Early stopping if valid coloring is found
-            if found_valid_coloring:
-                break
-
-        elapsed_time = time.time() - start_time_coloring
-        num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
-
-        # Append this EA's fitness values to the list for plotting later
-        fitness_values_list.append(fitness_values)
-
-    # No convergence plot, just return the data
-    return {
-        "Elapsed Time": elapsed_time,
-        "Colors Used": num_colors_used if found_valid_coloring else 0,
-        "Best Fitness": best_fitness,
-        "Fitness Evaluations": fitness_evaluations,
-        "Nodes": numOfNodes,
-        "Edges": numOfEdges
-    }
