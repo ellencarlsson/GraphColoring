@@ -1,11 +1,12 @@
-Figure: small_2
+Figure: small
 File Number: 12
 Max Generations: 1000
 Population Size: 100
 Mutation Rate: 0.02
-Colors Used: 15
-Runtime: 0.0036 s
+Colors Used: 14
+Runtime: 0.0070
 
 Generation,Average Fitness,Best Fitness
-0,9.26,2
-1,7.78,0
+0,8.54,2
+1,8.16,2
+2,6.92,0

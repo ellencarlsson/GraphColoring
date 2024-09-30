@@ -190,7 +190,6 @@ def evolutionary_graph_coloring(figure):
     elapsed_time = time.time() - start_time_coloring
     print(elapsed_time)
     num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
-    print("heeej", num_colors_used)
 
     calculations.store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used)
 
@@ -319,7 +318,7 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
                 break
 
     # Output the best result across all trials
-    print(f"Best overall solution uses {best_overall_num_colors}")
+    print(f"Best color {best_overall_num_colors}")
 
     # Store fitness values only for the best overall solution after all trials are complete
     calculations.store_fitness_values(
