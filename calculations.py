@@ -62,28 +62,40 @@ def extract_data_from_txt(file_path):
 import numpy as np
 
 def calculate_average_data(data_list):
-    """Calculates the average values of generations, average fitness, and best fitness across multiple files."""
+    """Calculates the average values of generations, average fitness, best fitness, colors used, and runtime across multiple files."""
+    
     # Find the minimum length of data across all files to avoid dimension mismatch
     min_length = min(len(data['generations']) for data in data_list)
     
     # Initialize arrays to accumulate fitness values
     avg_fitness_sum = np.zeros(min_length)
     best_fitness_sum = np.zeros(min_length)
-
+    
+    # Variables to accumulate colors used and runtime
+    colors_used_sum = 0
+    runtime_sum = 0
+    
     # Accumulate data for each generation, limiting to the minimum length found
     for data in data_list:
         avg_fitness_sum += np.array(data['avg_fitness'][:min_length])
         best_fitness_sum += np.array(data['best_fitness'][:min_length])
+        
+        # Accumulate colors used and runtime
+        colors_used_sum += data['colors_used']
+        runtime_sum += data['runtime']
     
     # Calculate average values by dividing by the number of files
     num_files = len(data_list)
     avg_fitness_avg = avg_fitness_sum / num_files
     best_fitness_avg = best_fitness_sum / num_files
-
+    avg_colors_used = colors_used_sum / num_files
+    avg_runtime = runtime_sum / num_files
+    
     # Extract the corresponding generations (limited to min_length)
     generations = data_list[0]['generations'][:min_length]
     
-    return generations, avg_fitness_avg, best_fitness_avg
+    return generations, avg_fitness_avg, best_fitness_avg, avg_colors_used, avg_runtime
+
 
 def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, output_path, max_generations, population_size, mutation_rate, colors_used, runtime):
     """Plots the fitness data and saves the figure."""
@@ -116,16 +128,14 @@ def getAvgFile(folder_path, output_dir):
         data = extract_data_from_txt(file_path)
         data_list.append(data)
     
-    # Calculate average fitness values
-    generations, avg_fitness_avg, best_fitness_avg = calculate_average_data(data_list)
+    # Calculate average fitness values, colors used, and runtime
+    generations, avg_fitness_avg, best_fitness_avg, avg_colors_used, avg_runtime = calculate_average_data(data_list)
     
     # Use the figure name from the first file
     figure_name = data_list[0]["figure_name"]
-    max_generations = data_list[1]["max_generations"]
-    population_size = data_list[2]["population_size"]
-    mutation_rate = data_list[3]["mutation_rate"]
-    colors_used = data_list[4]["colors_used"]
-    runtime = data_list[4]["runtime"]
+    max_generations = data_list[0]["max_generations"]
+    population_size = data_list[0]["population_size"]
+    mutation_rate = data_list[0]["mutation_rate"]
     
     # Create the output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
@@ -142,17 +152,11 @@ def getAvgFile(folder_path, output_dir):
                       max_generations,
                       population_size,
                       mutation_rate,
-                      colors_used,
-                      runtime
+                      avg_colors_used,
+                      avg_runtime
                       )
 
     print(f"Plot saved to {output_path}")
-
-# Example usage
-# folder_path = "path_to_your_folder_containing_txt_files"
-# output_dir = "path_to_output_directory"
-# process_folder(folder_path, output_dir)
-
 
 
 # Function to find the latest file number and increment it
@@ -206,7 +210,7 @@ def store_fitness_values(minColors, figure, average_fitness, best_fitness, max_g
         f.write(f"Population Size: {population_size}\n")
         f.write(f"Mutation Rate: {mutation_rate}\n")
         f.write(f"Colors Used: {num_colors_used}\n")
-        f.write(f"Runtime: {elapsed_time:.4f}\n")
+        f.write(f"Runtime: {elapsed_time:.2f}\n")
         f.write("\n")  # Separate parameters from the data
         
         # Store the fitness values per generation

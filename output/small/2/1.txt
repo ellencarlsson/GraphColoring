@@ -3,8 +3,8 @@ File Number: 1
 Max Generations: 1000
 Population Size: 100
 Mutation Rate: 0.02
-Colors Used: 14
-Runtime: 0.0024
+Colors Used: 13
+Runtime: 0.00
 
 Generation,Average Fitness,Best Fitness
-0,8.38,0
+0,9.3,0
