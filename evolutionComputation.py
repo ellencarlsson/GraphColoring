@@ -112,9 +112,9 @@ def mutate(candidate, current_num_colors, mutation_rate):
     return candidate, changed_nodes
 
 def evolutionary_graph_coloring(figure):
-    population_size = 100  # Reduced to balance computational cost and diversity
-    max_generations = 1000  # Reduced due to the small size of the graph
-    mutation_rate = 0.02
+    population_size = 150  # Reduced to balance computational cost and diversity
+    max_generations = 2000  # Reduced due to the small size of the graph
+    mutation_rate = 0.01
     max_colors = len(nodes)
 
     # Start timing
@@ -188,10 +188,9 @@ def evolutionary_graph_coloring(figure):
             break
 
     elapsed_time = time.time() - start_time_coloring
-    print(elapsed_time)
     num_colors_used = len(set(best_candidate)) if found_valid_coloring else 0
 
-    calculations.store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used)
+    calculations.store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used, numOfNodes, numOfEdges)
 
 def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
     population_size = 100  # Reduced to balance computational cost and diversity
@@ -330,6 +329,8 @@ def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
         population_size, 
         mutation_rate, 
         improvement_time,  # Pass the improvement time here
-        best_overall_num_colors
+        best_overall_num_colors,
+        numOfNodes, 
+        numOfEdges
     )
 

@@ -17,6 +17,8 @@ def extract_data_from_txt(file_path):
     mutation_rate = None
     colors_used = None
     runtime = None
+    numOfNodes = None  # Changed to match the rest of the code
+    numOfEdges = None  # Changed to match the rest of the code
 
     # Loop through the top lines to extract metadata
     for line in lines:
@@ -32,6 +34,10 @@ def extract_data_from_txt(file_path):
             colors_used = int(line.split(":")[-1].strip())
         elif "Runtime" in line:
             runtime = float(line.split(":")[-1].strip())
+        elif "Nodes" in line:  # This will extract the number of nodes
+            numOfNodes = int(line.split(":")[-1].strip())  # Changed to match the variable name
+        elif "Edges" in line:  # This will extract the number of edges
+            numOfEdges = int(line.split(":")[-1].strip())  # Changed to match the variable name
     
     # Extract the fitness data (Generation, Average Fitness, Best Fitness)
     data_start = lines.index("Generation,Average Fitness,Best Fitness\n") + 1
@@ -57,8 +63,11 @@ def extract_data_from_txt(file_path):
         "runtime": runtime,
         "generations": generations,
         "avg_fitness": avg_fitness,
-        "best_fitness": best_fitness
+        "best_fitness": best_fitness,
+        "numOfNodes": numOfNodes,  # Consistent with other parts of the code
+        "numOfEdges": numOfEdges   # Consistent with other parts of the code
     }
+
 import numpy as np
 
 def calculate_average_data(data_list):
@@ -90,27 +99,39 @@ def calculate_average_data(data_list):
     best_fitness_avg = best_fitness_sum / num_files
     avg_colors_used = colors_used_sum / num_files
     avg_runtime = runtime_sum / num_files
-    
+
     # Extract the corresponding generations (limited to min_length)
     generations = data_list[0]['generations'][:min_length]
     
     return generations, avg_fitness_avg, best_fitness_avg, avg_colors_used, avg_runtime
 
 
-def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, output_path, max_generations, population_size, mutation_rate, colors_used, runtime):
+def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, output_path, max_generations, population_size, mutation_rate, colors_used, runtime, nodes, edges):
     """Plots the fitness data and saves the figure."""
     plt.figure(figsize=(10, 6))
+    
+    # Check if generations and best_fitness have the same length
+    if len(generations) != len(best_fitness):
+        # Make sure they match by appending a generation
+        next_generation = len(generations)
+        generations = np.append(generations, next_generation)
+    
+    # Plot average and best fitness lines
     plt.plot(generations, avg_fitness, label="Average Fitness", color="blue")
     plt.plot(generations, best_fitness, label="Best Fitness", color="green", linestyle="--")
     
-    plt.suptitle(figure_name)
-    plt.suptitle(figure_name, fontsize=16, fontweight='bold')
-    plt.title(f"Max Generations: {max_generations}  Population Size: {population_size}  Mutation Rate: {mutation_rate * 100}%  Colors Used: {colors_used}  Runtime: {runtime:.4f} s")
+    # Add title and other details
+    plt.suptitle(f"{figure_name} - Nodes: {nodes} Edges: {edges}", fontsize=16, fontweight='bold')
+    plt.title(f"Max Generations: {max_generations}  Population Size: {population_size}  Mutation Rate: {mutation_rate * 100}%  Colors Used: {int(colors_used)}  Runtime: {runtime:.2f} s")
 
+    # Ensure y-axis starts at 0
+    plt.ylim(bottom=0)
+    # Add labels and legend
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
     plt.legend()
     
+    # Save and close the plot
     plt.savefig(output_path)
     plt.close()
 
@@ -136,6 +157,9 @@ def getAvgFile(folder_path, output_dir):
     max_generations = data_list[0]["max_generations"]
     population_size = data_list[0]["population_size"]
     mutation_rate = data_list[0]["mutation_rate"]
+    nodes = data_list[0]["numOfNodes"]
+    edges = data_list[0]["numOfEdges"]
+
     
     # Create the output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
@@ -153,7 +177,9 @@ def getAvgFile(folder_path, output_dir):
                       population_size,
                       mutation_rate,
                       avg_colors_used,
-                      avg_runtime
+                      avg_runtime,
+                      nodes,
+                      edges
                       )
 
     print(f"Plot saved to {output_path}")
@@ -176,7 +202,7 @@ def get_next_file_number(output_dir, figureCropped, numberCropped):
     return max(existing_files) + 1 if existing_files else 1
 
 # Function to save input parameters and fitness values for each run as .txt files
-def store_fitness_values(minColors, figure, average_fitness, best_fitness, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used, output_dir="output"):
+def store_fitness_values(minColors, figure, average_fitness, best_fitness, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used, numOfNodes, numOfEdges, output_dir="output"):
     generations = range(len(average_fitness))
 
     # Extract figure and number before and after the underscore
@@ -198,14 +224,14 @@ def store_fitness_values(minColors, figure, average_fitness, best_fitness, max_g
     figure_dir = os.path.join(output_dir, figureCropped, numberCropped)
     fitness_file_path = os.path.join(figure_dir, f"{file_number}.txt")
 
-    print("figure_dir", figure_dir)
-    print("fitness_file_path", fitness_file_path)
     # Saving input parameters and fitness values to a text file
     
     with open(fitness_file_path, "w") as f:
         # Store the input parameters at the top of the file
-        f.write(f"Figure: {figureCropped}\n")
+        f.write(f"Figure: {figure}\n")
         f.write(f"File Number: {file_number}\n")
+        f.write(f"Nodes: {numOfNodes}\n")
+        f.write(f"Edges: {numOfEdges}\n")
         f.write(f"Max Generations: {max_generations}\n")
         f.write(f"Population Size: {population_size}\n")
         f.write(f"Mutation Rate: {mutation_rate}\n")
