@@ -1,0 +1,16 @@
+Figure: small_5
+File Number: 22
+Nodes: 36
+Edges: 580
+Max Generations: 2000
+Population Size: 150
+Mutation Rate: 0.01
+Colors Used: 24
+Runtime: 0.03
+
+Generation,Average Fitness,Best Fitness
+0,31.493333333333332,8
+1,28.346666666666668,4
+2,25.546666666666667,4
+3,22.85333333333333,4
+4,21.14666666666667,0

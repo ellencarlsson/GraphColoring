@@ -4,7 +4,7 @@ import pygame
 
 mainpath = "DIMACS_graphs/"
 
-dimacs = "medium_2"
+dimacs = "small_5"
 dimacs_path = mainpath + dimacs + ".txt"
 
 def main():
@@ -18,5 +18,5 @@ def main():
 
 
 if __name__ == "__main__":
-    for i in range(5):
+    for i in range(100):
         main()
