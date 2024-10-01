@@ -18,6 +18,10 @@ stop_flag = False
 monitor_stop_flag = False
 monitor_lock = threading.Lock()
 
+population_size = 150  # Reduced to balance computational cost and diversity
+max_generations = 2000  # Reduced due to the small size of the graph
+mutation_rate = 0.01
+
 
 def init_adj_matrix_and_list(dimacs_path):
     global nodes, edges, adj_matrix, adj_list, numOfNodes, numOfEdges 
@@ -112,9 +116,7 @@ def mutate(candidate, current_num_colors, mutation_rate):
     return candidate, changed_nodes
 
 def evolutionary_graph_coloring(figure):
-    population_size = 150  # Reduced to balance computational cost and diversity
-    max_generations = 2000  # Reduced due to the small size of the graph
-    mutation_rate = 0.01
+    
     max_colors = len(nodes)
 
     # Start timing
@@ -193,9 +195,6 @@ def evolutionary_graph_coloring(figure):
     calculations.store_fitness_values(False, figure, average_fitness_per_generation, best_fitness_per_generation, max_generations, population_size, mutation_rate, elapsed_time, num_colors_used, numOfNodes, numOfEdges)
 
 def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
-    population_size = 100  # Reduced to balance computational cost and diversity
-    max_generations = 1000  # Adjust based on the size of the graph and performance
-    mutation_rate = 0.02
     max_colors = len(nodes)
 
     # Start overall timing (just for reference, may not be needed)

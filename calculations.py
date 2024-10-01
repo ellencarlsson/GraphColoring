@@ -34,10 +34,10 @@ def extract_data_from_txt(file_path):
             colors_used = int(line.split(":")[-1].strip())
         elif "Runtime" in line:
             runtime = float(line.split(":")[-1].strip())
-        elif "Nodes" in line:  # This will extract the number of nodes
-            numOfNodes = int(line.split(":")[-1].strip())  # Changed to match the variable name
-        elif "Edges" in line:  # This will extract the number of edges
-            numOfEdges = int(line.split(":")[-1].strip())  # Changed to match the variable name
+        elif "Nodes" in line:
+            numOfNodes = int(line.split(":")[-1].strip())  
+        elif "Edges" in line:
+            numOfEdges = int(line.split(":")[-1].strip())  
     
     # Extract the fitness data (Generation, Average Fitness, Best Fitness)
     data_start = lines.index("Generation,Average Fitness,Best Fitness\n") + 1
@@ -54,6 +54,7 @@ def extract_data_from_txt(file_path):
         avg_fitness.append(avg_fit)
         best_fitness.append(best_fit)
     
+    
     return {
         "figure_name": figure_name,
         "max_generations": max_generations,
@@ -63,10 +64,11 @@ def extract_data_from_txt(file_path):
         "runtime": runtime,
         "generations": generations,
         "avg_fitness": avg_fitness,
-        "best_fitness": best_fitness,
-        "numOfNodes": numOfNodes,  # Consistent with other parts of the code
-        "numOfEdges": numOfEdges   # Consistent with other parts of the code
+        "best_fitness": best_fitness,  # Updated with the new 0 appended if necessary
+        "numOfNodes": numOfNodes,  
+        "numOfEdges": numOfEdges   
     }
+
 
 import numpy as np
 
@@ -110,6 +112,10 @@ def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, outpu
     """Plots the fitness data and saves the figure."""
     plt.figure(figsize=(10, 6))
     
+    # Ensure that the last best fitness is 0
+    if best_fitness[-1] != 0:
+        best_fitness[-1] = 0
+    
     # Check if generations and best_fitness have the same length
     if len(generations) != len(best_fitness):
         # Make sure they match by appending a generation
@@ -124,13 +130,22 @@ def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, outpu
     plt.suptitle(f"{figure_name} - Nodes: {nodes} Edges: {edges}", fontsize=16, fontweight='bold')
     plt.title(f"Max Generations: {max_generations}  Population Size: {population_size}  Mutation Rate: {mutation_rate * 100}%  Colors Used: {int(colors_used)}  Runtime: {runtime:.2f} s")
 
+ # Mark start and end points of Average Fitness
+    plt.scatter(generations[0], avg_fitness[0], color="blue", s=100, zorder=5, label="Start Avg Fitness", marker='o')
+    plt.scatter(generations[-1], avg_fitness[-1], color="blue", s=100, zorder=5, label="End Avg Fitness", marker='o')
+    
+    # Mark start and end points of Best Fitness
+    plt.scatter(generations[0], best_fitness[0], color="green", s=100, zorder=5, label="Start Best Fitness", marker='o')
+    plt.scatter(generations[-1], best_fitness[-1], color="green", s=100, zorder=5, label="End Best Fitness", marker='o')
+    
     # Ensure y-axis starts at 0
     plt.ylim(bottom=0)
+
     # Add labels and legend
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
     plt.legend()
-    
+
     # Save and close the plot
     plt.savefig(output_path)
     plt.close()

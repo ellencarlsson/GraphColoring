@@ -4,7 +4,7 @@ import pygame
 
 mainpath = "DIMACS_graphs/"
 
-dimacs = "small_4"
+dimacs = "small_3"
 dimacs_path = mainpath + dimacs + ".txt"
 
 """def main():
@@ -36,9 +36,9 @@ def main():
     evolutionComputation.init_adj_matrix_and_list(dimacs_path)
 
     evolutionComputation.evolutionary_graph_coloring(dimacs)
-    evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs)
+    #evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs)
 
 
 if __name__ == "__main__":
-    for i in range(5):
+    for i in range(50):
         main()
