@@ -5,9 +5,9 @@ Edges: 236
 Max Generations: 2000
 Population Size: 150
 Mutation Rate: 0.01
-Colors Used: 32
-Runtime: 0.09
+Colors Used: 29
+Runtime: 0.01
 
 Generation,Average Fitness,Best Fitness
-0,9.933333333333334,2
-1,8.786666666666667,0
+0,10.373333333333333,2
+1,8.706666666666667,0

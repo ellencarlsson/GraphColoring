@@ -6,7 +6,7 @@ Max Generations: 2000
 Population Size: 150
 Mutation Rate: 0.01
 Colors Used: 15
-Runtime: 0.02
+Runtime: 0.00
 
 Generation,Average Fitness,Best Fitness
-0,6.253333333333333,0
+0,5.613333333333333,0

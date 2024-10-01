@@ -110,34 +110,37 @@ def calculate_average_data(data_list):
 
 def plot_fitness_data(generations, avg_fitness, best_fitness, figure_name, output_path, max_generations, population_size, mutation_rate, colors_used, runtime, nodes, edges):
     """Plots the fitness data and saves the figure."""
+    
     plt.figure(figsize=(10, 6))
+
+    # Ensure data length is at least 1 for plotting
+    if len(generations) > 1:
+        # Truncate data if generations exceed max_generations
+        if len(generations) > max_generations:
+            generations = generations[:max_generations]
+            avg_fitness = avg_fitness[:max_generations]
+            best_fitness = best_fitness[:max_generations]
     
-    # Ensure that the last best fitness is 0
-    if best_fitness[-1] != 0:
-        best_fitness[-1] = 0
+        # Plot average and best fitness lines
+        plt.plot(generations, avg_fitness, label="Average Fitness", color="blue", marker='o')  # Continuous line
+        plt.plot(generations, best_fitness, label="Best Fitness", color="green", linestyle="--", marker='o')  # Continuous line
     
-    # Check if generations and best_fitness have the same length
-    if len(generations) != len(best_fitness):
-        # Make sure they match by appending a generation
-        next_generation = len(generations)
-        generations = np.append(generations, next_generation)
+        # Mark start and end points of Average Fitness
+        plt.scatter(generations[0], avg_fitness[0], color="blue", s=100, zorder=5, label="Start Avg Fitness", marker='o')
+        plt.scatter(generations[-1], avg_fitness[-1], color="blue", s=100, zorder=5, label="End Avg Fitness", marker='o')
     
-    # Plot average and best fitness lines
-    plt.plot(generations, avg_fitness, label="Average Fitness", color="blue")
-    plt.plot(generations, best_fitness, label="Best Fitness", color="green", linestyle="--")
+        # Mark start and end points of Best Fitness
+        plt.scatter(generations[0], best_fitness[0], color="green", s=100, zorder=5, label="Start Best Fitness", marker='o')
+        plt.scatter(generations[-1], best_fitness[-1], color="green", s=100, zorder=5, label="End Best Fitness", marker='o')
+    else:
+        # Handle single-point case (fitness data doesn't have enough points)
+        plt.scatter(generations, avg_fitness, color="blue", s=100, zorder=5, label="Avg Fitness", marker='o')
+        plt.scatter(generations, best_fitness, color="green", s=100, zorder=5, label="Best Fitness", marker='o')
     
     # Add title and other details
     plt.suptitle(f"{figure_name} - Nodes: {nodes} Edges: {edges}", fontsize=16, fontweight='bold')
     plt.title(f"Max Generations: {max_generations}  Population Size: {population_size}  Mutation Rate: {mutation_rate * 100}%  Colors Used: {int(colors_used)}  Runtime: {runtime:.2f} s")
 
- # Mark start and end points of Average Fitness
-    plt.scatter(generations[0], avg_fitness[0], color="blue", s=100, zorder=5, label="Start Avg Fitness", marker='o')
-    plt.scatter(generations[-1], avg_fitness[-1], color="blue", s=100, zorder=5, label="End Avg Fitness", marker='o')
-    
-    # Mark start and end points of Best Fitness
-    plt.scatter(generations[0], best_fitness[0], color="green", s=100, zorder=5, label="Start Best Fitness", marker='o')
-    plt.scatter(generations[-1], best_fitness[-1], color="green", s=100, zorder=5, label="End Best Fitness", marker='o')
-    
     # Ensure y-axis starts at 0
     plt.ylim(bottom=0)
 
