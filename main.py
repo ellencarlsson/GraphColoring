@@ -4,19 +4,32 @@ import pygame
 
 mainpath = "DIMACS_graphs/"
 
-dimacs = "large_1"
-dimacs_path = mainpath + dimacs + ".txt"
+#figures = ["small_", "medium_"]
+figures = ["large_"]
+
+numbers = ["5"]
+#numbers = ["1", "2", "3", "4", "5"]
+
+
 
 def main():
     global selected_node, stop_flag
 
-    # Initialize adjacency matrix and list
-    evolutionComputation.init_adj_matrix_and_list(dimacs_path)
+    for figure in figures:
+        for number in numbers:
+            dimacs = figure + number
+            dimacs_path = mainpath + dimacs + ".txt"
 
-    #evolutionComputation.evolutionary_graph_coloring(dimacs) #100
-    evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs) #10
+            print(dimacs, dimacs_path)
 
+            evolutionComputation.init_adj_matrix_and_list(dimacs_path)
+
+            #for i in range(30):
+                #evolutionComputation.evolutionary_graph_coloring(dimacs)
+            
+            for i in range(30):
+                evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs)
 
 if __name__ == "__main__":
-    for i in range(5):
-        main()
+    
+    main()
