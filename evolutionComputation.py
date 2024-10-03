@@ -113,17 +113,20 @@ def mutate(population, mutation_rate, num_colors):
     return population
 
 def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
-    max_colors = len(nodes)
-    start_time_coloring = time.time()
-    improvement_time = 0
+    max_colors = len(nodes) # Set the initial maximum number of colors to the number of nodes in the graph
 
+    start_time_coloring = time.time() # Record start time  
+    improvement_time = 0 #Initialize a variable to keep time spent on improving solution
+
+    # Variables to keep tack of best overall candidate solution
     best_overall_candidate = None
     best_overall_num_colors = max_colors
     best_fitness_overall = float('inf')
-    num_nodes = len(nodes)
 
-    for trial in range(num_trials):
-        print(f"Starting trial {trial + 1}/{num_trials}...")
+    num_nodes = len(nodes) #Total number of nodes
+
+    for trial in range(num_trials): #Start the trials for fiding diffrent solutions
+        print(f"Starting trial {trial + 1}/{num_trials}...") #Print out trial data
 
         if best_overall_num_colors != max_colors:
             local_max_colors = best_overall_num_colors
