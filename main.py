@@ -4,11 +4,9 @@ import pygame
 
 mainpath = "DIMACS_graphs/"
 
-#figures = ["small_", "medium_"]
-figures = ["large_"]
+figures = ["small_", "medium_", "large_"]
 
-numbers = ["5"]
-#numbers = ["1", "2", "3", "4", "5"]
+numbers = ["1", "2", "3", "4", "5"]
 
 
 
@@ -24,8 +22,8 @@ def main():
 
             evolutionComputation.init_adj_matrix_and_list(dimacs_path)
 
-            #for i in range(30):
-                #evolutionComputation.evolutionary_graph_coloring(dimacs)
+            for i in range(30):
+                evolutionComputation.evolutionary_graph_coloring(dimacs)
             
             for i in range(30):
                 evolutionComputation.evolutionary_graph_coloring_min_colors(dimacs)
