@@ -27,89 +27,94 @@ def init_adj_matrix_and_list(dimacs_path):
 
     nodes = []
     edges = []
-    numOfNodes = 0  
-    numOfEdges = 0
+    numOfNodes = 0 #Initialize the number of nodes
+    numOfEdges = 0 #Initialize the number of edges
 
-    with open(dimacs_path, 'r') as f:
-        for line in f:
-            if line.startswith('p edge'):
+    with open(dimacs_path, 'r') as f: #Opens the DIMACS file containing all graphs
+        for line in f: #Loops through each line of the textfile
+            if line.startswith('p edge'): #The graphs metadata
                 _, _, num_nodes, num_edges = line.strip().split()
                 numOfNodes = int(num_nodes)  
-                numOfEdges = int(num_edges)  
-                num_nodes = int(num_nodes)
+                numOfEdges = int(num_edges)  #Extracts number of nodes and edges
+                num_nodes = int(num_nodes)   #and declare the values to numOfNodes and numOfEdges
 
-                num_columns = math.ceil(math.sqrt(num_nodes))  
-                num_rows = math.ceil(num_nodes / num_columns)  
+                num_columns = math.ceil(math.sqrt(num_nodes)) #Visualizing the graph
+                num_rows = math.ceil(num_nodes / num_columns) #Each column is one node, number of rows is based on nodes and columns
 
-                x_spacing = 800 // (num_columns + 1)
-                y_spacing = 800 // (num_rows + 1)
+                x_spacing = 800 // (num_columns + 1) #Spacing
+                y_spacing = 800 // (num_rows + 1) #Spacing
 
-                for i in range(num_nodes):
-                    row = i // num_columns
-                    col = i % num_columns
-                    x = (col + 1) * x_spacing 
+                for i in range(num_nodes): #Loops through each node
+                    row = i // num_columns #Row index for node i
+                    col = i % num_columns #Column index for node i
+                    x = (col + 1) * x_spacing #X and Y coordinates for the node
                     y = (row + 1) * y_spacing  
-                    nodes.append((x, y)) 
+                    nodes.append((x, y)) #Add the nodes position to the list of nodes
 
-            elif line.startswith('e'):
+            elif line.startswith('e'): #Edge between two nodes
                 _, node1, node2 = line.strip().split()
                 node1 = int(node1) - 1  
                 node2 = int(node2) - 1 
-                edges.append((node1, node2))  
+                edges.append((node1, node2))  #Append the edge to the list of edges
 
-    n = len(nodes)
-    adj_matrix = [[0 for _ in range(n)] for _ in range(n)]
-    adj_list = [[] for _ in range(n)]
+    n = len(nodes) #Number of nodes
+    adj_matrix = [[0 for _ in range(n)] for _ in range(n)] #nxn matrix filled with zeros, 0 = no edge between two nodes
+    adj_list = [[] for _ in range(n)] #List for storing neighbors of the corresponding node
     
-    for edge in edges:
-        node1, node2 = edge
-        adj_matrix[node1][node2] = 1
-        adj_matrix[node2][node1] = 1 
-        adj_list[node1].append(node2)
-        adj_list[node2].append(node1)
+    for edge in edges: #Loop through each edge
+        node1, node2 = edge #Unpack the edge
+        adj_matrix[node1][node2] = 1 #There is an edge between node1 and node2
+        adj_matrix[node2][node1] = 1 #There is an edge between node2 and node1
+        adj_list[node1].append(node2) #Contains all neighbors of node 1
+        adj_list[node2].append(node1) #Contains all neighbors of node 2
 
     # Convert edges to NumPy array for vectorized operations
     edges_np_array = np.array(edges)
 
 def evaluate_population(population):
     """Vectorized fitness evaluation using NumPy arrays."""
-    conflicts = np.sum(population[:, edges_np_array[:, 0]] == population[:, edges_np_array[:, 1]], axis=1)
-    return conflicts
+    conflicts = np.sum(population[:, edges_np_array[:, 0]] == population[:, edges_np_array[:, 1]], axis=1) #Sums the number of conlicts
+    #Compares to adjacent nodes and if the share the same color
+    return conflicts #Returns the number of conlicts
 
 def tournament_selection(population, fitness_values, tournament_size=2):
     """Vectorized tournament selection."""
-    selected_indices = []
-    for _ in range(population.shape[0]):
-        participants = np.random.choice(population.shape[0], tournament_size, replace=False)
-        best = participants[np.argmin(fitness_values[participants])]
-        selected_indices.append(best)
-    selected_population = population[selected_indices]
+    selected_indices = [] #Stores indices of selected individuals
+    for _ in range(population.shape[0]): #Repeat until we select the same number of individuals as population size
+        participants = np.random.choice(population.shape[0], tournament_size, replace=False) #Selects random participants
+        best = participants[np.argmin(fitness_values[participants])] #Gives the index to the best individual with the lowest fitness
+        selected_indices.append(best) #Add the winners index to the selected list
+    selected_population = population[selected_indices] #Create new population
     return selected_population
 
 def crossover_population(parents):
     """Vectorized crossover operation."""
-    num_parents = parents.shape[0]
-    np.random.shuffle(parents)
-    if num_parents % 2 != 0:
+    num_parents = parents.shape[0] #Stores the number of parents
+    np.random.shuffle(parents) #Shuffles parents to ensure randomness in crossover
+    if num_parents % 2 != 0: #If number of parents is odd, one parent is removed
         parents = parents[:-1]
-    half = num_parents // 2
-    parent1 = parents[:half]
+    half = num_parents // 2 #Number of parent pairs, used for dividing the parents
+    parent1 = parents[:half] #Splits shuffled parent into two equal groups
     parent2 = parents[half:2*half]
 
     crossover_points = np.random.randint(1, parents.shape[1], size=half)
-    children = np.empty_like(parents[:2*half])
+    #Random crossover point where the pairing will happen
+    children = np.empty_like(parents[:2*half]) #List for storing children
 
-    for i in range(half):
+    for i in range(half): #Loop through ech pair
         cp = crossover_points[i]
-        children[2*i] = np.concatenate([parent1[i, :cp], parent2[i, cp:]])
-        children[2*i + 1] = np.concatenate([parent2[i, :cp], parent1[i, cp:]])
+        children[2*i] = np.concatenate([parent1[i, :cp], parent2[i, cp:]]) #Parent1 + Parent2
+        children[2*i + 1] = np.concatenate([parent2[i, :cp], parent1[i, cp:]]) #Parent2 + Parent1
     return children
 
 def mutate(population, mutation_rate, num_colors):
     """Vectorized mutation operation."""
     mutation_mask = np.random.rand(*population.shape) < mutation_rate
+    #Generates a matrix of random values between 0 and one, with same shape as the population array.
     random_colors = np.random.randint(0, num_colors, size=population.shape)
+    #Generates random colors with same shape as population
     population[mutation_mask] = random_colors[mutation_mask]
+    #If mutation_mask is true, then the population indice is replaced with the value from random_colors
     return population
 
 def evolutionary_graph_coloring_min_colors(figure, num_trials=10):
